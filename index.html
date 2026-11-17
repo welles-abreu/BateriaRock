@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>DrumAcademy Pro — Plataforma Interativa de Bateria Rock</title>
+  <title>DrumAcademy Pro — Plataforma Interativa de Bateria Rock (Acesso Livre)</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -67,126 +67,7 @@
 </head>
 <body class="min-h-screen flex flex-col bg-studio-950 text-slate-100 select-none">
 
-  <!-- ==================== TELA DE AUTENTICAÇÃO (LOGIN ALUNO / PROFESSOR) ==================== -->
-  <div id="auth-screen" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-studio-950/95 overflow-y-auto">
-    <div class="max-w-4xl w-full grid md:grid-cols-12 rounded-2xl overflow-hidden shadow-2xl border border-slate-800 bg-studio-900 my-auto">
-      
-      <!-- Coluna Apresentação -->
-      <div class="md:col-span-5 bg-gradient-to-br from-blue-950 via-studio-900 to-amber-950/40 p-8 flex flex-col justify-between border-b md:border-b-0 md:border-r border-slate-800">
-        <div>
-          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/30 text-blue-400 text-xs font-semibold mb-4">
-            <span>🥁</span> STUDIO ENGINE v3.5 • ZERO-LATENCY
-          </div>
-          <h1 class="text-3xl font-extrabold tracking-tight text-white">
-            DrumAcademy <span class="text-amber-400">Pro</span>
-          </h1>
-          <p class="text-sm text-slate-300 mt-2 leading-relaxed">
-            Método progressivo de Bateria Rock com <strong>10 Módulos</strong> e <strong>100 Músicas Clássicas</strong> com estrutura de compassos 100% fiel às gravações originais.
-          </p>
-
-          <div class="mt-6 space-y-3 text-xs text-slate-300">
-            <div class="flex items-center gap-2.5">
-              <span class="w-6 h-6 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold">40</span>
-              <span><strong>Músicas Curtas</strong> (1m30s a 2m45s — Ramones, Beatles, Nirvana...)</span>
-            </div>
-            <div class="flex items-center gap-2.5">
-              <span class="w-6 h-6 rounded-lg bg-blue-500/20 text-blue-400 flex items-center justify-center font-bold">40</span>
-              <span><strong>Músicas Médias</strong> (2m46s a 4m15s — AC/DC, Queen, Foo Fighters...)</span>
-            </div>
-            <div class="flex items-center gap-2.5">
-              <span class="w-6 h-6 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold">20</span>
-              <span><strong>Músicas Longas</strong> (&gt; 4m16s — Pink Floyd, Led Zeppelin, Metallica...)</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="mt-8 pt-4 border-t border-slate-800/80 space-y-2">
-          <p class="text-[11px] uppercase tracking-wider text-slate-400 font-semibold">Atalhos de Demonstração Imediata</p>
-          <div class="grid grid-cols-2 gap-2">
-            <button onclick="quickDemoLogin()" class="px-3 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs transition flex items-center justify-center gap-1.5 shadow-lg shadow-amber-500/20">
-              <span>⚡</span> Acesso Rápido Demo (Aluno)
-            </button>
-            <button onclick="openTeacherLoginModal()" class="px-3 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs border border-slate-700 transition flex items-center justify-center gap-1.5">
-              <span>🎓</span> Painel do Professor
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Coluna Formulários de Acesso -->
-      <div class="md:col-span-7 p-8 flex flex-col justify-center">
-        <!-- Abas de Login -->
-        <div class="flex rounded-xl bg-studio-950 p-1 border border-slate-800 mb-6">
-          <button id="tab-login-code" onclick="switchAuthTab('code')" class="flex-1 py-2 text-xs font-bold rounded-lg bg-blue-600 text-white transition">
-            🔑 Código de Acesso Exclusivo
-          </button>
-          <button id="tab-login-cred" onclick="switchAuthTab('cred')" class="flex-1 py-2 text-xs font-bold rounded-lg text-slate-400 hover:text-white transition">
-            👤 Login e Senha
-          </button>
-          <button id="tab-login-prof" onclick="switchAuthTab('prof')" class="flex-1 py-2 text-xs font-bold rounded-lg text-slate-400 hover:text-white transition">
-            🎓 Área do Professor
-          </button>
-        </div>
-
-        <!-- Form 1: Código Exclusivo -->
-        <div id="auth-form-code" class="space-y-4">
-          <div>
-            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
-              Código do Aluno (Fornecido pelo Professor)
-            </label>
-            <input id="input-student-code" type="text" placeholder="Ex: DRUM-DEMO-M10 ou cole seu Token Portátil"
-              class="w-full px-4 py-3 rounded-xl bg-studio-950 border border-slate-700 focus:border-blue-500 focus:outline-none font-mono text-sm text-amber-300" />
-            <p class="text-[11px] text-slate-400 mt-1.5">
-              Aceita códigos curtos locais (ex: <code class="text-amber-400">DRUM-LUCAS-M05-4821</code>) ou códigos portáteis Base64 gerados em outro computador.
-            </p>
-          </div>
-          <button onclick="loginWithCode()" class="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm shadow-lg shadow-blue-600/25 transition">
-            Entrar no Estúdio com Código
-          </button>
-        </div>
-
-        <!-- Form 2: Login e Senha -->
-        <div id="auth-form-cred" class="space-y-4 hidden">
-          <div>
-            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Usuário / Login</label>
-            <input id="input-student-user" type="text" placeholder="Ex: demo"
-              class="w-full px-4 py-2.5 rounded-xl bg-studio-950 border border-slate-700 focus:border-blue-500 focus:outline-none text-sm" />
-          </div>
-          <div>
-            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Senha</label>
-            <input id="input-student-pass" type="password" placeholder="••••••"
-              class="w-full px-4 py-2.5 rounded-xl bg-studio-950 border border-slate-700 focus:border-blue-500 focus:outline-none text-sm" />
-          </div>
-          <button onclick="loginWithCredentials()" class="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm shadow-lg shadow-blue-600/25 transition">
-            Acessar Conta do Aluno
-          </button>
-          <p class="text-xs text-slate-400 text-center">
-            Conta padrão de teste: Login <code class="text-amber-400">aluno</code> / Senha <code class="text-amber-400">1234</code>
-          </p>
-        </div>
-
-        <!-- Form 3: Área do Professor -->
-        <div id="auth-form-prof" class="space-y-4 hidden">
-          <div class="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-xs text-amber-200">
-            <strong>Acesso Restrito do Educador:</strong> Gerencie alunos, libere módulos progressivos (1 a 10) e gere códigos portáteis Base64.
-            <br><span class="text-amber-400 font-mono">Senha inicial padrão: prof2026</span>
-          </div>
-          <div>
-            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Senha Mestre do Professor</label>
-            <input id="input-teacher-pass" type="password" value="prof2026"
-              class="w-full px-4 py-2.5 rounded-xl bg-studio-950 border border-slate-700 focus:border-amber-500 focus:outline-none text-sm font-mono" />
-          </div>
-          <button onclick="loginTeacher()" class="w-full py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-sm shadow-lg shadow-amber-500/20 transition">
-            Abrir Portal do Professor
-          </button>
-        </div>
-
-        <div id="auth-error-msg" class="mt-4 hidden p-3 rounded-xl bg-rose-500/15 border border-rose-500/40 text-rose-300 text-xs font-medium"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ==================== TOPBAR PRINCIPAL ==================== -->
+  <!-- ==================== TOPBAR PRINCIPAL (ACESSO 100% ABERTO) ==================== -->
   <header class="sticky top-0 z-30 bg-studio-900/95 backdrop-blur border-b border-slate-800 px-4 py-2.5">
     <div class="max-w-[1600px] mx-auto flex flex-wrap items-center justify-between gap-3">
       <!-- Logo & Navegação -->
@@ -199,7 +80,7 @@
             <div class="font-extrabold text-base tracking-tight leading-none">
               DrumAcademy <span class="text-amber-400">Pro</span>
             </div>
-            <div class="text-[11px] text-slate-400">10 Módulos • 100 Clássicos do Rock</div>
+            <div class="text-[11px] text-slate-400">Acesso Livre • 10 Módulos • 100 Clássicos do Rock</div>
           </div>
         </div>
 
@@ -210,23 +91,14 @@
           <button id="nav-btn-practice" onclick="switchMainView('practice')" class="px-3.5 py-1.5 rounded-lg text-xs font-bold text-slate-300 hover:text-white transition">
             🎯 Estúdio de Treino
           </button>
-          <button id="nav-btn-teacher" onclick="openTeacherPortalFromTopbar()" class="px-3.5 py-1.5 rounded-lg text-xs font-bold text-amber-400 hover:bg-amber-500/10 transition">
-            🎓 Área do Professor
-          </button>
         </nav>
       </div>
 
-      <!-- Status do Aluno Logado -->
+      <!-- Progresso Local do Usuário (Sem Login/Bloqueio) -->
       <div class="flex items-center gap-3">
         <div class="hidden sm:flex items-center gap-4 px-3.5 py-1.5 rounded-xl bg-studio-950 border border-slate-800 text-xs">
           <div>
-            <span class="text-slate-400">Aluno:</span>
-            <strong id="header-student-name" class="text-white ml-1">Visitante</strong>
-          </div>
-          <div class="h-3 w-px bg-slate-700"></div>
-          <div>
-            <span class="text-slate-400">Liberado até:</span>
-            <span id="header-student-module" class="ml-1 px-2 py-0.5 rounded bg-blue-500/20 text-blue-300 font-bold">Módulo 10</span>
+            <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-bold">🔓 Todos os 10 Módulos Liberados</span>
           </div>
           <div class="h-3 w-px bg-slate-700"></div>
           <div class="flex items-center gap-1 text-amber-400 font-bold">
@@ -235,11 +107,11 @@
             <span class="text-slate-400 font-normal">/ 300</span>
           </div>
           <div class="h-3 w-px bg-slate-700"></div>
-          <div class="text-emerald-400 font-mono font-semibold" id="header-student-Completed">0/100 concluídas</div>
+          <div class="text-blue-400 font-mono font-semibold" id="header-student-completed">0/100 concluídas</div>
         </div>
 
-        <button onclick="logoutUser()" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-rose-600/80 text-xs font-semibold text-slate-200 transition">
-          Sair / Trocar Conta
+        <button onclick="resetLocalProgress()" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-rose-600/80 text-xs font-semibold text-slate-200 transition" title="Zerar estrelas e músicas concluídas">
+          🔄 Zerar Progresso
         </button>
       </div>
     </div>
@@ -256,11 +128,11 @@
         <div class="lg:col-span-8 glass-panel rounded-2xl p-5 flex flex-col justify-between">
           <div>
             <div class="flex flex-wrap items-center justify-between gap-2">
-              <span class="text-xs font-bold uppercase tracking-wider text-blue-400" id="module-banner-tag">ARQUITETURA PEDAGÓGICA PROGRESSIVA</span>
+              <span class="text-xs font-bold uppercase tracking-wider text-blue-400" id="module-banner-tag">ARQUITETURA PEDAGÓGICA PROGRESSIVA • ACESSO ABERTO</span>
               <span class="text-xs text-slate-400 font-mono" id="catalog-count-summary">Exibindo 100 músicas</span>
             </div>
             <h2 class="text-xl font-extrabold text-white mt-1" id="module-banner-title">
-              Selecione um Módulo ou Filtre o Repertório
+              Todos os 10 Módulos Liberados (Iniciante ao Intermediário)
             </h2>
             <p class="text-xs text-slate-300 mt-1 leading-relaxed" id="module-banner-desc">
               Cada música preserva rigorosamente o número total de compassos e seções (Intro, Verso, Refrão, Ponte, Solo, Outro) da gravação original para você tocar junto sem perder a sincronia.
@@ -278,7 +150,7 @@
         <div class="lg:col-span-4 glass-panel rounded-2xl p-5 flex flex-col justify-between">
           <div class="flex items-center justify-between">
             <h3 class="text-xs font-bold uppercase tracking-wider text-slate-300">Distribuição do Catálogo (100 Músicas)</h3>
-            <span class="px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-300 text-[11px] font-mono">100% Verificado</span>
+            <span class="px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-300 text-[11px] font-mono">100% Liberado</span>
           </div>
           <div class="grid grid-cols-3 gap-2 my-3">
             <button onclick="setDurationFilter('curta')" class="p-2.5 rounded-xl bg-studio-950 border border-slate-800 hover:border-emerald-500/60 text-left transition">
@@ -298,7 +170,7 @@
             </button>
           </div>
           <div class="text-[11px] text-slate-400 flex items-center justify-between">
-            <span>Tempo total praticado pelo aluno:</span>
+            <span>Tempo total praticado neste navegador:</span>
             <strong id="student-practice-time" class="text-amber-400 font-mono">0 min</strong>
           </div>
         </div>
@@ -327,10 +199,10 @@
           </select>
         </div>
         <div>
-          <label class="block text-[10px] font-bold uppercase text-slate-400 mb-1">Status do Aluno</label>
+          <label class="block text-[10px] font-bold uppercase text-slate-400 mb-1">Status de Estudo</label>
           <select id="filter-status" onchange="renderCatalog()" class="w-full px-3 py-2 rounded-xl bg-studio-950 border border-slate-800 text-xs focus:border-blue-500 focus:outline-none">
             <option value="all">Todas (Concluídas + Pendentes)</option>
-            <option value="completed">✅ Concluídas pelo Aluno</option>
+            <option value="completed">✅ Concluídas</option>
             <option value="pending">⏳ Pendentes de Conclusão</option>
           </select>
         </div>
@@ -457,7 +329,7 @@
             </span>
           </div>
           <div class="text-xs font-mono text-slate-400">
-            Clique em qualquer seção abaixo para pular diretamente ou ativar Loop A-B:
+            Clique em qualquer seção abaixo para pular diretamente:
           </div>
         </div>
         <!-- Mapa de Seções da Música -->
@@ -635,101 +507,6 @@
       </div>
     </section>
 
-    <!-- ==================== VIEW 3: PORTAL DO PROFESSOR (GESTÃO DE ALUNOS E CÓDIGOS) ==================== -->
-    <section id="view-teacher" class="hidden space-y-6">
-      <div class="glass-panel rounded-2xl p-5 flex flex-wrap items-center justify-between gap-4 border-l-4 border-l-amber-400">
-        <div>
-          <span class="text-xs font-bold uppercase tracking-wider text-amber-400">PAINEL ADMINISTRATIVO DO EDUCADOR</span>
-          <h2 class="text-2xl font-extrabold text-white">Gestão de Alunos, Módulos e Códigos Portáteis</h2>
-          <p class="text-xs text-slate-300 mt-1">
-            Cadastre alunos, defina até qual módulo (1 a 10) cada aluno pode acessar e gere códigos exclusivos portáteis codificados em Base64.
-          </p>
-        </div>
-        <div class="flex flex-wrap items-center gap-2">
-          <button onclick="exportStudentsJSON()" class="px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold transition">
-            📥 Exportar Backup (.json)
-          </button>
-          <label class="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 text-xs font-bold cursor-pointer transition">
-            📤 Importar Backup (.json)
-            <input type="file" accept=".json" onchange="importStudentsJSON(event)" class="hidden" />
-          </label>
-          <button onclick="switchMainView('catalog')" class="px-3.5 py-2 rounded-xl bg-studio-950 border border-slate-700 text-xs font-bold text-slate-300">
-            Voltar ao Catálogo
-          </button>
-        </div>
-      </div>
-
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        <!-- Formulário Cadastrar Novo Aluno + Config Senha Mestre -->
-        <div class="lg:col-span-4 space-y-4">
-          <div class="glass-panel rounded-2xl p-5 space-y-3.5">
-            <h3 class="text-base font-extrabold text-white flex items-center gap-2">
-              <span>➕</span> Cadastrar Novo Aluno
-            </h3>
-            <div>
-              <label class="block text-xs font-semibold text-slate-400 mb-1">Nome Completo do Aluno</label>
-              <input id="new-student-name" type="text" placeholder="Ex: João Pedro Silva"
-                class="w-full px-3.5 py-2 rounded-xl bg-studio-950 border border-slate-700 text-sm focus:border-amber-400 focus:outline-none" />
-            </div>
-            <div class="grid grid-cols-2 gap-2.5">
-              <div>
-                <label class="block text-xs font-semibold text-slate-400 mb-1">Login</label>
-                <input id="new-student-login" type="text" placeholder="Ex: joao"
-                  class="w-full px-3.5 py-2 rounded-xl bg-studio-950 border border-slate-700 text-sm focus:border-amber-400 focus:outline-none" />
-              </div>
-              <div>
-                <label class="block text-xs font-semibold text-slate-400 mb-1">Senha</label>
-                <input id="new-student-pass" type="text" placeholder="Ex: batera10"
-                  class="w-full px-3.5 py-2 rounded-xl bg-studio-950 border border-slate-700 text-sm focus:border-amber-400 focus:outline-none" />
-              </div>
-            </div>
-            <div>
-              <label class="block text-xs font-semibold text-slate-400 mb-1">Liberar Acesso até o Módulo:</label>
-              <select id="new-student-module" class="w-full px-3.5 py-2.5 rounded-xl bg-studio-950 border border-slate-700 text-sm text-amber-300 font-semibold">
-                <option value="1">Módulo 1 — Pulso Básico (10 músicas)</option>
-                <option value="2">Módulo 2 — Groove Rock em Colcheias (20 músicas)</option>
-                <option value="3">Módulo 3 — Variações de Bumbo (30 músicas)</option>
-                <option value="4" selected>Módulo 4 — Introdução às Viradas (40 músicas)</option>
-                <option value="5">Módulo 5 — Crash e Chimbal Aberto (50 músicas)</option>
-                <option value="6">Módulo 6 — Síncopes e Ride (60 músicas)</option>
-                <option value="7">Módulo 7 — Viradas Completas nos Tons (70 músicas)</option>
-                <option value="8">Módulo 8 — Up-Tempo & Punk Rock (80 músicas)</option>
-                <option value="9">Módulo 9 — Ghost Notes, 6/8 e Shuffle (90 músicas)</option>
-                <option value="10">Módulo 10 — Repertório Completo (100 músicas)</option>
-              </select>
-            </div>
-            <button onclick="createStudent()" class="w-full py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold text-xs shadow-lg shadow-amber-500/20 transition">
-              Gerar Credenciais + Código Exclusivo
-            </button>
-          </div>
-
-          <!-- Alterar Senha Mestre do Professor -->
-          <div class="glass-panel rounded-2xl p-5 space-y-3">
-            <h3 class="text-sm font-extrabold text-white">🔐 Segurança do Professor</h3>
-            <div>
-              <label class="block text-xs text-slate-400 mb-1">Nova Senha Mestre do Professor</label>
-              <div class="flex gap-2">
-                <input id="change-teacher-pass" type="text" placeholder="Nova senha (atual: prof2026)"
-                  class="flex-1 px-3 py-2 rounded-xl bg-studio-950 border border-slate-700 text-xs font-mono" />
-                <button onclick="updateTeacherMasterPassword()" class="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-bold text-amber-400">
-                  Salvar
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Lista de Alunos Cadastrados -->
-        <div class="lg:col-span-8 glass-panel rounded-2xl p-5">
-          <div class="flex items-center justify-between mb-4">
-            <h3 class="text-base font-extrabold text-white">📋 Alunos Cadastrados e Métricas de Estudo</h3>
-            <span id="teacher-students-count" class="text-xs font-mono text-slate-400">0 alunos</span>
-          </div>
-          <div id="teacher-students-list" class="space-y-3"></div>
-        </div>
-      </div>
-    </section>
-
   </main>
 
   <!-- Notificação Toast -->
@@ -756,12 +533,11 @@
     const SUBDIVISION_LABELS = ['1', 'e', '+', 'a', '2', 'e', '+', 'a', '3', 'e', '+', 'a', '4', 'e', '+', 'a'];
 
     // Biblioteca de Grooves e Viradas (16 steps = 1 compasso 4/4 em semicolcheias)
-    // Cada chave mapeia para um array de steps (0..15) onde a peça toca
     const PATTERN_LIBRARY = {
       // MÓDULO 1: Semínimas, Bumbo 1 e 3, Caixa 2 e 4
-      m1_stomp:     { B: [0, 2, 8, 10], C: [4, 12] }, // Estilo We Will Rock You
-      m1_pulse:     { B: [0, 4, 8, 12], C: [4, 12] }, // Four on the floor / Seven Nation Army
-      m1_quarter:   { X: [0, 4, 8, 12], B: [0, 8], C: [4, 12] }, // Semínimas no chimbal
+      m1_stomp:     { B: [0, 2, 8, 10], C: [4, 12] },
+      m1_pulse:     { B: [0, 4, 8, 12], C: [4, 12] },
+      m1_quarter:   { X: [0, 4, 8, 12], B: [0, 8], C: [4, 12] },
       m1_fill:      { B: [0, 8], C: [4, 8, 10, 12, 14] },
 
       // MÓDULO 2: Groove Rock em Colcheias (8th notes)
@@ -829,8 +605,6 @@
       { id: 10, title: "Módulo 10: Repertório Intermediário Consolidado", desc: "Performance completa combinando múltiplas conduções, viradas dinâmicas, pontes épicas e estruturas longas.", vPat: "m10_verse", cPat: "m10_chorus", fPat: "m10_fill" }
     ];
 
-    // Catálogo compacto das 100 músicas reais [id, mod, title, band, durSec, bpm, totalBars, focus]
-    // Durações verificadas: 40 Curtas (90..165s), 40 Médias (166..255s), 20 Longas (>=256s)
     const RAW_SONGS_DATA = [
       // ================= MÓDULO 1 (6 Curtas, 4 Médias, 0 Longas) =================
       [1,  1, "We Will Rock You",             "Queen",                  122, 81,  54,  "Pulso icônico: Bumbo 1 e 3, Caixa no 2 e 4 sem chimbal"],
@@ -955,9 +729,6 @@
 
     /********************************************************************
      * 3. ENGINE DE EXPANSÃO DE PARTITURA E CONSTRUÇÃO DAS 100 MÚSICAS
-     *    Preserva o número exato de compassos (`totalBars`) dividido em
-     *    seções reais (Intro, Verso 1, Refrão 1, Verso 2, Refrão 2,
-     *    Ponte/Solo, Refrão Final, Outro).
      ********************************************************************/
     function buildRealisticSections(totalBars, modId) {
       const mod = MODULES_INFO[modId - 1];
@@ -1035,11 +806,6 @@
       };
     });
 
-    /**
-     * Engine de Expansão de Partitura:
-     * Expande qualquer uma das 100 músicas em todos os seus compassos reais (`1..totalBars`)
-     * adaptando o padrão de cada compasso ao Nível de Dificuldade escolhido (1, 2 ou 3).
-     */
     function expandSongScore(song, difficultyLevel = 2) {
       const expandedBars = [];
       let globalBarIndex = 1;
@@ -1051,22 +817,18 @@
           let patternKey = sec.groove;
           let isFillBar = false;
 
-          // Músicas especiais do Módulo 1 (We Will Rock You / Seven Nation Army)
           if (song.id === 1 && sec.name.startsWith("Verso")) patternKey = "m1_stomp";
           if (song.id === 7 && sec.name.startsWith("Verso")) patternKey = "m1_pulse";
 
           if (difficultyLevel === 1) {
-            // Nível 1: Super Simplificado (apenas pulso base sem viradas complexas)
             patternKey = (song.id === 1) ? "m1_stomp" : "m1_quarter";
             isFillBar = false;
           } else if (difficultyLevel === 2) {
-            // Nível 2: Groove Padrão + virada no final de cada seção (a partir do Módulo 4)
             if (isLastBarOfSection && song.module >= 4) {
               patternKey = sec.fill;
               isFillBar = true;
             }
           } else if (difficultyLevel === 3) {
-            // Nível 3: Groove + Viradas completas a cada 4 compassos e Crash no início de seção
             if (isLastBarOfSection || isPhraseEnd) {
               patternKey = (song.module >= 7) ? "m7_full_fill" : sec.fill;
               isFillBar = true;
@@ -1074,7 +836,6 @@
           }
 
           const basePattern = PATTERN_LIBRARY[patternKey] || PATTERN_LIBRARY.m2_8th;
-          // Clonar matriz de 16 steps: steps[0..15] = array de códigos de peças
           const steps = Array.from({ length: 16 }, () => []);
           Object.entries(basePattern).forEach(([pieceCode, indices]) => {
             indices.forEach(stepIdx => {
@@ -1084,7 +845,6 @@
             });
           });
 
-          // Se for o primeiro compasso de um Refrão no Nível 2 ou 3 (Módulo >= 5), garante Crash no tempo 1
           if (b === 1 && secIdx > 0 && difficultyLevel >= 2 && song.module >= 5) {
             if (!steps[0].includes('K')) {
               steps[0].push('K');
@@ -1110,7 +870,6 @@
 
     /********************************************************************
      * 4. MOTOR DE ÁUDIO ZERO-LATÊNCIA (WEB AUDIO API SYNTHESIZER)
-     *    Sintetiza todas as 9 peças da bateria + Metrônomo sem arquivos externos
      ********************************************************************/
     class DrumAudioEngine {
       constructor() {
@@ -1122,7 +881,6 @@
         if (!this.ctx) {
           const AudioCtx = window.AudioContext || window.webkitAudioContext;
           this.ctx = new AudioCtx();
-          // Gerar buffer de ruído branco para Caixa, Chimbal e Pratos
           const bufferSize = this.ctx.sampleRate * 1.5;
           this.noiseBuffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
           const data = this.noiseBuffer.getChannelData(0);
@@ -1169,7 +927,6 @@
       }
 
       synthSnare(t) {
-        // Corpo do tambor
         const osc = this.ctx.createOscillator();
         const oscGain = this.ctx.createGain();
         osc.type = 'triangle';
@@ -1182,7 +939,6 @@
         osc.start(t);
         osc.stop(t + 0.15);
 
-        // Esteira (Ruído filtrado)
         const noise = this.ctx.createBufferSource();
         noise.buffer = this.noiseBuffer;
         const filter = this.ctx.createBiquadFilter();
@@ -1262,7 +1018,6 @@
       }
 
       synthRide(t) {
-        // Ping metálico + cauda aguda
         const osc = this.ctx.createOscillator();
         const oscGain = this.ctx.createGain();
         osc.type = 'triangle';
@@ -1310,447 +1065,49 @@
     const audioEngine = new DrumAudioEngine();
 
     /********************************************************************
-     * 5. SISTEMA DE AUTENTICAÇÃO E PORTAL DO PROFESSOR (localStorage + Base64)
+     * 5. PROGRESSO LOCAL ABERTO (SEM LOGIN / SEM BLOQUEIO DE MÓDULOS)
      ********************************************************************/
-    const STORAGE_KEYS = {
-      STUDENTS: 'drumacademy_students_v3',
-      TEACHER_PASS: 'drumacademy_teacher_pass_v3',
-      CURRENT_STUDENT: 'drumacademy_active_student_v3'
-    };
+    const PROGRESS_STORAGE_KEY = 'drumacademy_open_progress_v1';
 
-    function encodePortableToken(studentObj) {
-      const payload = {
-        n: studentObj.name,
-        u: studentObj.login,
-        p: studentObj.password,
-        m: studentObj.unlockedModule,
-        c: studentObj.shortCode
-      };
-      const b64 = btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
-      return `DRUM-PORTABLE-${b64}`;
-    }
-
-    function decodePortableToken(tokenStr) {
-      try {
-        const clean = tokenStr.trim().replace(/^DRUM-PORTABLE-/, '');
-        const json = decodeURIComponent(escape(atob(clean)));
-        const data = JSON.parse(json);
-        if (data && data.n && data.m) return data;
-      } catch (e) {
-        return null;
-      }
-      return null;
-    }
-
-    function generateShortCode(name, maxMod) {
-      const slug = (name || 'ALUNO').toUpperCase().replace(/[^A-Z]/g, '').slice(0, 6) || 'ALUNO';
-      const modStr = String(maxMod).padStart(2, '0');
-      const rand = Math.floor(1000 + Math.random() * 9000);
-      return `DRUM-${slug}-M${modStr}-${rand}`;
-    }
-
-    function loadStudentsDB() {
-      const raw = localStorage.getItem(STORAGE_KEYS.STUDENTS);
+    function loadUserProgress() {
+      const raw = localStorage.getItem(PROGRESS_STORAGE_KEY);
       if (raw) {
         try { return JSON.parse(raw); } catch (e) {}
       }
-      // Alunos iniciais padrão para demonstração imediata
-      const defaults = [
-        {
-          id: 'stu_demo',
-          name: 'Aluno Demo (Acesso Completo)',
-          login: 'aluno',
-          password: '1234',
-          unlockedModule: 10,
-          active: true,
-          shortCode: 'DRUM-DEMO-M10',
-          completedSongs: [1, 2, 7, 14, 15],
-          starsBySong: { 1: 3, 2: 3, 7: 3, 14: 2, 15: 3 },
-          practiceMinutes: 42
-        },
-        {
-          id: 'stu_lucas',
-          name: 'Lucas Mendes (Iniciante)',
-          login: 'lucas',
-          password: '1234',
-          unlockedModule: 4,
-          active: true,
-          shortCode: 'DRUM-LUCAS-M04-4821',
-          completedSongs: [1, 2, 11],
-          starsBySong: { 1: 3, 2: 2, 11: 3 },
-          practiceMinutes: 18
-        }
-      ];
-      defaults.forEach(s => { s.portableToken = encodePortableToken(s); });
-      saveStudentsDB(defaults);
-      return defaults;
-    }
-
-    function saveStudentsDB(list) {
-      localStorage.setItem(STORAGE_KEYS.STUDENTS, JSON.stringify(list));
-    }
-
-    function getTeacherPassword() {
-      return localStorage.getItem(STORAGE_KEYS.TEACHER_PASS) || 'prof2026';
-    }
-
-    let studentsList = loadStudentsDB();
-    let currentStudent = null;
-
-    function switchAuthTab(tab) {
-      ['code', 'cred', 'prof'].forEach(t => {
-        document.getElementById(`auth-form-${t}`).classList.toggle('hidden', t !== tab);
-        const btn = document.getElementById(`tab-login-${t}`);
-        if (t === tab) {
-          btn.className = 'flex-1 py-2 text-xs font-bold rounded-lg bg-blue-600 text-white transition';
-        } else {
-          btn.className = 'flex-1 py-2 text-xs font-bold rounded-lg text-slate-400 hover:text-white transition';
-        }
-      });
-      document.getElementById('auth-error-msg').classList.add('hidden');
-    }
-
-    function showAuthError(msg) {
-      const el = document.getElementById('auth-error-msg');
-      el.textContent = msg;
-      el.classList.remove('hidden');
-    }
-
-    function quickDemoLogin() {
-      studentsList = loadStudentsDB();
-      let demo = studentsList.find(s => s.login === 'aluno') || studentsList[0];
-      completeStudentLogin(demo);
-    }
-
-    function openTeacherLoginModal() {
-      document.getElementById('auth-screen').classList.remove('hidden');
-      switchAuthTab('prof');
-    }
-
-    function loginWithCode() {
-      const codeInput = document.getElementById('input-student-code').value.trim();
-      if (!codeInput) return showAuthError('Digite ou cole seu Código de Acesso Exclusivo.');
-
-      studentsList = loadStudentsDB();
-      // 1. Verificar código curto local
-      let found = studentsList.find(s =>
-        s.shortCode.toUpperCase() === codeInput.toUpperCase() ||
-        (s.portableToken && s.portableToken === codeInput)
-      );
-
-      // 2. Se não existir localmente, tentar decodificar Token Portátil Base64 gerado em outro dispositivo
-      if (!found) {
-        const decoded = decodePortableToken(codeInput);
-        if (decoded) {
-          found = {
-            id: 'stu_' + Date.now(),
-            name: decoded.n,
-            login: decoded.u || 'aluno_portatil',
-            password: decoded.p || '1234',
-            unlockedModule: Number(decoded.m) || 1,
-            active: true,
-            shortCode: decoded.c || generateShortCode(decoded.n, decoded.m),
-            completedSongs: [],
-            starsBySong: {},
-            practiceMinutes: 0
-          };
-          found.portableToken = encodePortableToken(found);
-          studentsList.push(found);
-          saveStudentsDB(studentsList);
-          showToast(`Perfil portátil de ${found.name} importado com sucesso!`);
-        }
-      }
-
-      if (!found) {
-        return showAuthError('Código inválido ou não encontrado. Verifique com seu professor ou use DRUM-DEMO-M10.');
-      }
-      if (!found.active) {
-        return showAuthError('O acesso deste aluno está temporariamente bloqueado pelo professor.');
-      }
-      completeStudentLogin(found);
-    }
-
-    function loginWithCredentials() {
-      const u = document.getElementById('input-student-user').value.trim().toLowerCase();
-      const p = document.getElementById('input-student-pass').value.trim();
-      studentsList = loadStudentsDB();
-      const found = studentsList.find(s => s.login.toLowerCase() === u && s.password === p);
-      if (!found) return showAuthError('Usuário ou senha incorretos. Use "aluno" / "1234" para testar.');
-      if (!found.active) return showAuthError('Conta bloqueada pelo professor.');
-      completeStudentLogin(found);
-    }
-
-    function completeStudentLogin(student) {
-      currentStudent = student;
-      localStorage.setItem(STORAGE_KEYS.CURRENT_STUDENT, student.id);
-      document.getElementById('auth-screen').classList.add('hidden');
-      updateStudentHeaderUI();
-      renderModulePills();
-      renderCatalog();
-      showToast(`Bem-vindo ao estúdio, ${student.name}!`);
-    }
-
-    function loginTeacher() {
-      const pass = document.getElementById('input-teacher-pass').value;
-      if (pass !== getTeacherPassword()) {
-        return showAuthError('Senha mestre do professor incorreta! (Padrão: prof2026)');
-      }
-      if (!currentStudent) {
-        studentsList = loadStudentsDB();
-        currentStudent = studentsList[0];
-      }
-      document.getElementById('auth-screen').classList.add('hidden');
-      updateStudentHeaderUI();
-      switchMainView('teacher');
-      renderTeacherPortal();
-      showToast('Portal do Professor desbloqueado.');
-    }
-
-    function openTeacherPortalFromTopbar() {
-      const pass = prompt('Digite a Senha Mestre do Professor (Padrão de demonstração: prof2026):', 'prof2026');
-      if (pass === null) return;
-      if (pass !== getTeacherPassword()) {
-        showToast('Senha incorreta!', 'error');
-        return;
-      }
-      switchMainView('teacher');
-      renderTeacherPortal();
-    }
-
-    function logoutUser() {
-      stopPlayback(true);
-      document.getElementById('auth-screen').classList.remove('hidden');
-      switchAuthTab('code');
-    }
-
-    function updateStudentHeaderUI() {
-      if (!currentStudent) return;
-      document.getElementById('header-student-name').textContent = currentStudent.name;
-      document.getElementById('header-student-module').textContent = `Módulo ${currentStudent.unlockedModule}`;
-      const totalStars = Object.values(currentStudent.starsBySong || {}).reduce((a, b) => a + b, 0);
-      document.getElementById('header-student-stars').textContent = totalStars;
-      const completedCount = (currentStudent.completedSongs || []).length;
-      document.getElementById('header-student-Completed').textContent = `${completedCount}/100 concluídas`;
-      document.getElementById('student-practice-time').textContent = `${currentStudent.practiceMinutes || 0} min`;
-    }
-
-    function persistCurrentStudent() {
-      if (!currentStudent) return;
-      studentsList = loadStudentsDB();
-      const idx = studentsList.findIndex(s => s.id === currentStudent.id);
-      if (idx !== -1) {
-        studentsList[idx] = currentStudent;
-        saveStudentsDB(studentsList);
-      }
-      updateStudentHeaderUI();
-    }
-
-    /********************************************************************
-     * 6. FUNÇÕES DO PAINEL DO PROFESSOR (CRUD ALUNOS + BACKUP JSON)
-     ********************************************************************/
-    function createStudent() {
-      const name = document.getElementById('new-student-name').value.trim();
-      const login = document.getElementById('new-student-login').value.trim().toLowerCase();
-      const password = document.getElementById('new-student-pass').value.trim();
-      const unlockedModule = Number(document.getElementById('new-student-module').value) || 1;
-
-      if (!name || !login || !password) {
-        showToast('Preencha Nome, Login e Senha do aluno.', 'error');
-        return;
-      }
-
-      studentsList = loadStudentsDB();
-      if (studentsList.some(s => s.login.toLowerCase() === login)) {
-        showToast('Já existe um aluno com este login.', 'error');
-        return;
-      }
-
-      const newStu = {
-        id: 'stu_' + Date.now(),
-        name,
-        login,
-        password,
-        unlockedModule,
-        active: true,
-        shortCode: generateShortCode(name, unlockedModule),
+      return {
         completedSongs: [],
         starsBySong: {},
         practiceMinutes: 0
       };
-      newStu.portableToken = encodePortableToken(newStu);
-
-      studentsList.push(newStu);
-      saveStudentsDB(studentsList);
-
-      document.getElementById('new-student-name').value = '';
-      document.getElementById('new-student-login').value = '';
-      document.getElementById('new-student-pass').value = '';
-
-      renderTeacherPortal();
-      showToast(`Aluno ${name} cadastrado! Código: ${newStu.shortCode}`);
     }
 
-    function renderTeacherPortal() {
-      studentsList = loadStudentsDB();
-      document.getElementById('teacher-students-count').textContent = `${studentsList.length} alunos cadastrados`;
-      const container = document.getElementById('teacher-students-list');
-
-      container.innerHTML = studentsList.map(stu => {
-        const stars = Object.values(stu.starsBySong || {}).reduce((a, b) => a + b, 0);
-        const completed = (stu.completedSongs || []).length;
-        return `
-          <div class="p-4 rounded-xl bg-studio-950 border ${stu.active ? 'border-slate-800' : 'border-rose-500/40 opacity-75'} flex flex-col gap-3">
-            <div class="flex flex-wrap items-center justify-between gap-2">
-              <div>
-                <div class="flex items-center gap-2">
-                  <span class="font-extrabold text-sm text-white">${stu.name}</span>
-                  <span class="px-2 py-0.5 rounded text-[10px] font-bold ${stu.active ? 'bg-emerald-500/20 text-emerald-300' : 'bg-rose-500/20 text-rose-300'}">
-                    ${stu.active ? 'ATIVO' : 'BLOQUEADO'}
-                  </span>
-                </div>
-                <div class="text-xs text-slate-400 mt-0.5">
-                  Login: <code class="text-amber-300">${stu.login}</code> • Senha: <code class="text-amber-300">${stu.password}</code> •
-                  Concluídas: <strong class="text-emerald-400">${completed}/100</strong> • Estrelas: <strong class="text-amber-400">⭐ ${stars}</strong> •
-                  Tempo: <strong class="text-blue-400">${stu.practiceMinutes || 0} min</strong>
-                </div>
-              </div>
-
-              <div class="flex flex-wrap items-center gap-1.5">
-                <select onchange="changeStudentModule('${stu.id}', this.value)" class="px-2.5 py-1.5 rounded-lg bg-studio-900 border border-slate-700 text-xs text-blue-300 font-bold">
-                  ${Array.from({ length: 10 }, (_, i) => i + 1).map(m =>
-                    `<option value="${m}" ${stu.unlockedModule === m ? 'selected' : ''}>Liberado até Módulo ${m}</option>`
-                  ).join('')}
-                </select>
-                <button onclick="resetStudentPassword('${stu.id}')" class="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs text-slate-200 font-semibold">
-                  🔑 Senha
-                </button>
-                <button onclick="toggleStudentStatus('${stu.id}')" class="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs text-amber-300 font-semibold">
-                  ${stu.active ? 'Bloquear' : 'Ativar'}
-                </button>
-                <button onclick="deleteStudent('${stu.id}')" class="px-2.5 py-1.5 rounded-lg bg-rose-500/20 hover:bg-rose-500/30 text-xs text-rose-300 font-semibold">
-                  Excluir
-                </button>
-              </div>
-            </div>
-
-            <!-- Códigos de Acesso do Aluno -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-2 pt-2 border-t border-slate-800/80 text-xs">
-              <div class="flex items-center justify-between bg-studio-900 px-3 py-1.5 rounded-lg border border-slate-800">
-                <div>
-                  <span class="text-[10px] text-slate-400 block">Código Rápido:</span>
-                  <code class="font-mono text-amber-400 font-bold">${stu.shortCode}</code>
-                </div>
-                <button onclick="copyText('${stu.shortCode}')" class="px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-[11px] font-semibold">Copiar</button>
-              </div>
-              <div class="flex items-center justify-between bg-studio-900 px-3 py-1.5 rounded-lg border border-slate-800">
-                <div class="truncate pr-2">
-                  <span class="text-[10px] text-slate-400 block">Token Portátil Base64 (Qualquer Dispositivo):</span>
-                  <code class="font-mono text-blue-300 text-[11px]">${stu.portableToken}</code>
-                </div>
-                <button onclick="copyText('${stu.portableToken}')" class="px-2 py-1 rounded bg-blue-600/30 hover:bg-blue-600/50 text-blue-200 text-[11px] font-semibold shrink-0">Copiar Token</button>
-              </div>
-            </div>
-          </div>
-        `;
-      }).join('');
+    function saveUserProgress() {
+      localStorage.setItem(PROGRESS_STORAGE_KEY, JSON.stringify(userProgress));
+      updateHeaderProgressUI();
     }
 
-    function changeStudentModule(id, newMod) {
-      studentsList = loadStudentsDB();
-      const s = studentsList.find(x => x.id === id);
-      if (!s) return;
-      s.unlockedModule = Number(newMod);
-      s.shortCode = generateShortCode(s.name, s.unlockedModule);
-      s.portableToken = encodePortableToken(s);
-      saveStudentsDB(studentsList);
-      if (currentStudent && currentStudent.id === id) {
-        currentStudent = s;
-        updateStudentHeaderUI();
-        renderModulePills();
-        renderCatalog();
-      }
-      renderTeacherPortal();
-      showToast(`Módulo atualizado para ${s.name} (Módulo ${newMod}).`);
+    let userProgress = loadUserProgress();
+
+    function updateHeaderProgressUI() {
+      const totalStars = Object.values(userProgress.starsBySong || {}).reduce((a, b) => a + b, 0);
+      document.getElementById('header-student-stars').textContent = totalStars;
+      const completedCount = (userProgress.completedSongs || []).length;
+      document.getElementById('header-student-completed').textContent = `${completedCount}/100 concluídas`;
+      document.getElementById('student-practice-time').textContent = `${userProgress.practiceMinutes || 0} min`;
     }
 
-    function resetStudentPassword(id) {
-      const newPass = prompt('Digite a nova senha para este aluno:');
-      if (!newPass) return;
-      studentsList = loadStudentsDB();
-      const s = studentsList.find(x => x.id === id);
-      if (!s) return;
-      s.password = newPass.trim();
-      s.portableToken = encodePortableToken(s);
-      saveStudentsDB(studentsList);
-      renderTeacherPortal();
-      showToast('Senha do aluno redefinida!');
-    }
-
-    function toggleStudentStatus(id) {
-      studentsList = loadStudentsDB();
-      const s = studentsList.find(x => x.id === id);
-      if (!s) return;
-      s.active = !s.active;
-      saveStudentsDB(studentsList);
-      renderTeacherPortal();
-      showToast(`Status de ${s.name} alterado.`);
-    }
-
-    function deleteStudent(id) {
-      if (studentsList.length <= 1) {
-        showToast('Mantenha pelo menos 1 aluno cadastrado no sistema.', 'error');
-        return;
-      }
-      studentsList = studentsList.filter(x => x.id !== id);
-      saveStudentsDB(studentsList);
-      renderTeacherPortal();
-      showToast('Aluno removido.');
-    }
-
-    function updateTeacherMasterPassword() {
-      const val = document.getElementById('change-teacher-pass').value.trim();
-      if (!val) return showToast('Digite uma senha válida.', 'error');
-      localStorage.setItem(STORAGE_KEYS.TEACHER_PASS, val);
-      document.getElementById('change-teacher-pass').value = '';
-      showToast('Senha mestre do professor atualizada!');
-    }
-
-    function exportStudentsJSON() {
-      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(loadStudentsDB(), null, 2));
-      const a = document.createElement('a');
-      a.setAttribute('href', dataStr);
-      a.setAttribute('download', `drumacademy_alunos_backup.json`);
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      showToast('Backup .json exportado com sucesso!');
-    }
-
-    function importStudentsJSON(event) {
-      const file = event.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        try {
-          const imported = JSON.parse(e.target.result);
-          if (Array.isArray(imported) && imported.length > 0) {
-            saveStudentsDB(imported);
-            renderTeacherPortal();
-            showToast(`${imported.length} alunos restaurados com sucesso!`);
-          } else {
-            showToast('Arquivo JSON inválido.', 'error');
-          }
-        } catch (err) {
-          showToast('Erro ao ler arquivo JSON.', 'error');
-        }
-      };
-      reader.readAsText(file);
+    function resetLocalProgress() {
+      if (!confirm('Deseja realmente zerar o seu histórico de músicas concluídas e estrelas?')) return;
+      userProgress = { completedSongs: [], starsBySong: {}, practiceMinutes: 0 };
+      saveUserProgress();
+      renderCatalog();
+      showToast('Progresso local zerado!');
     }
 
     /********************************************************************
-     * 7. CATÁLOGO DE MÓDULOS E FILTROS (100 MÚSICAS)
+     * 6. CATÁLOGO DE MÓDULOS E FILTROS (100 MÚSICAS 100% DESBLOQUEADAS)
      ********************************************************************/
-    let selectedModuleFilter = 'all'; // 'all' ou 1..10
+    let selectedModuleFilter = 'all';
 
     function populateBandsDropdown() {
       const bands = [...new Set(SONGS_DB.map(s => s.band))].sort();
@@ -1760,7 +1117,6 @@
     }
 
     function renderModulePills() {
-      const unlocked = currentStudent ? currentStudent.unlockedModule : 10;
       const container = document.getElementById('module-pills-container');
 
       let html = `
@@ -1774,17 +1130,14 @@
       `;
 
       MODULES_INFO.forEach(m => {
-        const isLocked = m.id > unlocked;
         const isSelected = selectedModuleFilter === m.id;
         html += `
           <button onclick="selectModule(${m.id})" class="px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1 ${
             isSelected
               ? 'bg-amber-500 text-slate-950 shadow'
-              : isLocked
-                ? 'bg-studio-950/50 text-slate-500 border border-slate-800/60'
-                : 'bg-studio-950 text-slate-200 border border-slate-800 hover:border-blue-500/50'
+              : 'bg-studio-950 text-slate-200 border border-slate-800 hover:border-blue-500/50'
           }">
-            <span>${isLocked ? '🔒' : '🥁'}</span> Mód ${m.id}
+            <span>🥁</span> Mód ${m.id}
           </button>
         `;
       });
@@ -1796,8 +1149,8 @@
       selectedModuleFilter = modId;
       renderModulePills();
       if (modId === 'all') {
-        document.getElementById('module-banner-tag').textContent = 'ARQUITETURA PEDAGÓGICA PROGRESSIVA • 100 CLÁSSICOS';
-        document.getElementById('module-banner-title').textContent = 'Todos os 10 Módulos (Iniciante ao Intermediário)';
+        document.getElementById('module-banner-tag').textContent = 'ARQUITETURA PEDAGÓGICA PROGRESSIVA • ACESSO ABERTO';
+        document.getElementById('module-banner-title').textContent = 'Todos os 10 Módulos Liberados (Iniciante ao Intermediário)';
         document.getElementById('module-banner-desc').textContent = 'Cada música preserva rigorosamente o número total de compassos e seções reais da gravação original.';
       } else {
         const info = MODULES_INFO[modId - 1];
@@ -1827,8 +1180,7 @@
       const durFilter = document.getElementById('filter-duration').value;
       const bandFilter = document.getElementById('filter-band').value;
       const statusFilter = document.getElementById('filter-status').value;
-      const unlockedMax = currentStudent ? currentStudent.unlockedModule : 10;
-      const completedIds = currentStudent ? (currentStudent.completedSongs || []) : [];
+      const completedIds = userProgress.completedSongs || [];
 
       const filtered = SONGS_DB.filter(song => {
         if (selectedModuleFilter !== 'all' && song.module !== selectedModuleFilter) return false;
@@ -1845,17 +1197,14 @@
 
       const grid = document.getElementById('songs-grid');
       grid.innerHTML = filtered.map(song => {
-        const isLocked = song.module > unlockedMax;
         const isDone = completedIds.includes(song.id);
-        const stars = (currentStudent && currentStudent.starsBySong && currentStudent.starsBySong[song.id]) || 0;
+        const stars = (userProgress.starsBySong && userProgress.starsBySong[song.id]) || 0;
 
         return `
           <div class="glass-panel rounded-2xl p-4 flex flex-col justify-between border transition ${
-            isLocked
-              ? 'border-slate-800/50 opacity-60'
-              : isDone
-                ? 'border-emerald-500/40 hover:border-emerald-400'
-                : 'border-slate-800 hover:border-blue-500/60'
+            isDone
+              ? 'border-emerald-500/40 hover:border-emerald-400'
+              : 'border-slate-800 hover:border-blue-500/60'
           }">
             <div>
               <div class="flex items-center justify-between gap-2 mb-2">
@@ -1886,14 +1235,10 @@
 
             <div class="mt-3.5 pt-3 border-t border-slate-800/80 flex items-center justify-between gap-2">
               <span class="text-[11px] font-semibold ${isDone ? 'text-emerald-400' : 'text-slate-400'}">
-                ${isDone ? '✅ Concluída' : isLocked ? `🔒 Requer Módulo ${song.module}` : '⏳ Pronta para praticar'}
+                ${isDone ? '✅ Concluída' : '🔓 Acesso Livre'}
               </span>
-              <button onclick="openSongInStudio(${song.id})" class="px-3.5 py-2 rounded-xl text-xs font-extrabold transition ${
-                isLocked
-                  ? 'bg-slate-800 text-slate-400 cursor-not-allowed'
-                  : 'bg-blue-600 hover:bg-blue-500 text-white shadow shadow-blue-600/20'
-              }">
-                ${isLocked ? 'Bloqueado' : '🎯 Praticar Agora'}
+              <button onclick="openSongInStudio(${song.id})" class="px-3.5 py-2 rounded-xl text-xs font-extrabold bg-blue-600 hover:bg-blue-500 text-white shadow shadow-blue-600/20 transition">
+                🎯 Praticar Agora
               </button>
             </div>
           </div>
@@ -1902,7 +1247,7 @@
     }
 
     /********************************************************************
-     * 8. PAINEL DE TREINO VISUAL LÚDICO (PLAYBACK, HIGHWAY 60FPS, PARTITURA)
+     * 7. PAINEL DE TREINO VISUAL LÚDICO (PLAYBACK, HIGHWAY 60FPS, PARTITURA)
      ********************************************************************/
     let activeSong = SONGS_DB[0];
     let activeDifficulty = 2; // 1, 2, 3
@@ -1912,17 +1257,14 @@
     let isCountInPhase = false;
     let countInBeat = 1;
 
-    // Estado do cursor na música
-    let currentBarIndex = 0; // 0..totalBars-1
-    let currentStepIndex = 0; // 0..15 (semicolcheias dentro do compasso)
-    let loopSectionIndex = 'all'; // 'all' ou índice da seção (0..sections.length-1)
+    let currentBarIndex = 0;
+    let currentStepIndex = 0;
+    let loopSectionIndex = 'all';
 
-    // Opções de áudio
     let metronomeEnabled = true;
     let drumGuideEnabled = true;
     let countInEnabled = true;
 
-    // Timers de sincronização
     let stepTimerId = null;
     let lastStepTimestamp = 0;
     let stepDurationMs = 120;
@@ -1932,29 +1274,20 @@
       const song = SONGS_DB.find(s => s.id === songId);
       if (!song) return;
 
-      const unlockedMax = currentStudent ? currentStudent.unlockedModule : 10;
-      if (song.module > unlockedMax) {
-        showToast(`Esta música pertence ao Módulo ${song.module}. Peça ao professor para liberar!`, 'error');
-        return;
-      }
-
       stopPlayback(true);
       activeSong = song;
       currentBpm = song.bpm;
       loopSectionIndex = 'all';
 
-      // Atualizar cabeçalho do Estúdio
       document.getElementById('practice-module-badge').textContent = `MÓDULO ${song.module}`;
       document.getElementById('practice-duration-badge').textContent = `${song.durationFormatted} • ${song.durationLabel.toUpperCase()}`;
       document.getElementById('practice-Meter-badge').textContent = song.meter;
       document.getElementById('practice-song-title').textContent = `${song.title} — ${song.band}`;
       document.getElementById('practice-song-focus').textContent = `Foco Técnico: ${song.focus}`;
 
-      // Atualizar Slider BPM
       document.getElementById('bpm-slider').value = currentBpm;
       updateBpmLabels();
 
-      // Preencher Seletor de Loop de Seção (A-B)
       const loopSelect = document.getElementById('section-loop-select');
       let startBar = 1;
       loopSelect.innerHTML = `<option value="all">🔁 Música Completa (${song.totalBars} compassos)</option>` +
@@ -2075,7 +1408,6 @@
         : 'py-2 px-2 rounded-xl bg-studio-950 border border-slate-800 text-slate-400 text-[11px] font-bold transition flex items-center justify-center gap-1';
     }
 
-    // Renderizar barra de seções e progresso de compassos
     function renderSectionsTimeline() {
       const barObj = activeExpandedScore[currentBarIndex] || activeExpandedScore[0];
       if (!barObj) return;
@@ -2112,7 +1444,6 @@
       }).join('');
     }
 
-    // Renderizar Partitura Rítmica Simplificada em Tempo Real (Compasso Atual + Preview do Próximo)
     function renderLiveNotationGrid() {
       const barObj = activeExpandedScore[currentBarIndex] || activeExpandedScore[0];
       const nextBarObj = activeExpandedScore[(currentBarIndex + 1) % activeExpandedScore.length];
@@ -2125,7 +1456,6 @@
 
       const grid = document.getElementById('live-notation-grid');
 
-      // Cabeçalho de contagem: 1 e + a 2 e + a 3 e + a 4 e + a
       let headerRow = `<div class="grid grid-cols-17 gap-1 items-center text-center font-mono text-[11px]">
         <div class="text-left font-bold text-slate-400 pr-2">PEÇA</div>`;
       for (let s = 0; s < 16; s++) {
@@ -2145,7 +1475,6 @@
       }
       headerRow += `</div>`;
 
-      // Exibir as linhas das peças ativas no compasso (ou conjunto principal: Prato/Chimbal, Tons, Caixa, Bumbo)
       const displayOrder = ['K', 'R', 'X', 'O', 'T1', 'T2', 'S', 'C', 'B'];
       const activePiecesInBar = displayOrder.filter(code =>
         code === 'X' || code === 'C' || code === 'B' ||
@@ -2182,7 +1511,6 @@
 
       grid.innerHTML = headerRow + rowsHtml;
 
-      // Preview do Próximo Compasso
       document.getElementById('next-bar-type-badge').textContent = nextBarObj.isFillBar ? '🔥 VIRADA (FILL)' : '🎵 Groove';
       document.getElementById('next-bar-type-badge').className = nextBarObj.isFillBar
         ? 'px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 text-[10px] font-bold'
@@ -2224,7 +1552,7 @@
     }
 
     /********************************************************************
-     * 9. CONTROLE DE PLAYBACK E AGENDAMENTO DE STEPS + COUNT-IN
+     * 8. CONTROLE DE PLAYBACK E AGENDAMENTO DE STEPS + COUNT-IN
      ********************************************************************/
     function togglePlay() {
       if (isPlaying) {
@@ -2235,8 +1563,6 @@
     }
 
     function recalculateStepInterval() {
-      // 1 compasso 4/4 = 4 semínimas = 16 semicolcheias (steps)
-      // Duração de 1 semicolcheia (1/4 de batida) em ms:
       stepDurationMs = (60 / currentBpm / 4) * 1000;
       if (stepTimerId) {
         clearInterval(stepTimerId);
@@ -2255,7 +1581,7 @@
 
       if (countInEnabled && currentStepIndex === 0) {
         isCountInPhase = true;
-        countInBeat = 0; // 0..15 steps de count-in (4 batidas = 0, 4, 8, 12)
+        countInBeat = 0;
       } else {
         isCountInPhase = false;
       }
@@ -2295,7 +1621,6 @@
     function onStepTick() {
       lastStepTimestamp = performance.now();
 
-      // Fase de Count-In (1 compasso = 16 semicolcheias, clique nos steps 0, 4, 8, 12)
       if (isCountInPhase) {
         const badge = document.getElementById('countin-overlay-badge');
         badge.classList.remove('hidden');
@@ -2315,7 +1640,6 @@
       const barObj = activeExpandedScore[currentBarIndex];
       if (!barObj) return;
 
-      // Metrônomo nos tempos 1, 2, 3, 4 (steps 0, 4, 8, 12)
       if (currentStepIndex % 4 === 0) {
         const beatNumber = Math.floor(currentStepIndex / 4) + 1;
         document.getElementById('current-beat-indicator').textContent = `Pulso: ${beatNumber} / 4`;
@@ -2324,7 +1648,6 @@
         }
       }
 
-      // Tocar peças do step atual e acender bateria SVG
       const piecesToTrigger = barObj.steps[currentStepIndex] || [];
       piecesToTrigger.forEach(code => {
         if (drumGuideEnabled) {
@@ -2333,10 +1656,8 @@
         flashDrumPadSVG(code);
       });
 
-      // Atualizar grade visual
       renderLiveNotationGrid();
 
-      // Avançar step
       currentStepIndex++;
       if (currentStepIndex >= 16) {
         currentStepIndex = 0;
@@ -2356,7 +1677,6 @@
       } else {
         currentBarIndex++;
         if (currentBarIndex >= activeExpandedScore.length) {
-          // Concluiu todos os compassos da música!
           currentBarIndex = 0;
           markCurrentSongCompleted();
           stopPlayback(true);
@@ -2380,7 +1700,6 @@
       flashDrumPadSVG(code);
     }
 
-    // Atalhos de teclado para tocar bateria ao vivo
     window.addEventListener('keydown', (e) => {
       if (['INPUT', 'SELECT', 'TEXTAREA'].includes(document.activeElement.tagName)) return;
       const key = e.key.toUpperCase();
@@ -2399,21 +1718,21 @@
     });
 
     function markCurrentSongCompleted() {
-      if (!currentStudent || !activeSong) return;
-      if (!currentStudent.completedSongs.includes(activeSong.id)) {
-        currentStudent.completedSongs.push(activeSong.id);
+      if (!activeSong) return;
+      if (!userProgress.completedSongs.includes(activeSong.id)) {
+        userProgress.completedSongs.push(activeSong.id);
       }
-      const prevStars = currentStudent.starsBySong[activeSong.id] || 0;
-      currentStudent.starsBySong[activeSong.id] = Math.max(prevStars, activeDifficulty);
-      currentStudent.practiceMinutes = (currentStudent.practiceMinutes || 0) + Math.max(2, Math.round(activeSong.durationSec / 60));
+      const prevStars = userProgress.starsBySong[activeSong.id] || 0;
+      userProgress.starsBySong[activeSong.id] = Math.max(prevStars, activeDifficulty);
+      userProgress.practiceMinutes = (userProgress.practiceMinutes || 0) + Math.max(2, Math.round(activeSong.durationSec / 60));
 
-      persistCurrentStudent();
+      saveUserProgress();
       renderCatalog();
-      showToast(`🎉 Parabéns! "${activeSong.title}" concluída com ${currentStudent.starsBySong[activeSong.id]} estrelas!`);
+      showToast(`🎉 Parabéns! "${activeSong.title}" concluída com ${userProgress.starsBySong[activeSong.id]} estrelas!`);
     }
 
     /********************************************************************
-     * 10. RENDERIZADOR CANVAS 60FPS DA PISTA "DRUM HERO / HIGHWAY"
+     * 9. RENDERIZADOR CANVAS 60FPS DA PISTA "DRUM HERO / HIGHWAY"
      ********************************************************************/
     function startHighwayRenderLoop() {
       const canvas = document.getElementById('highway-canvas');
@@ -2424,18 +1743,16 @@
         const H = canvas.height;
         ctx.clearRect(0, 0, W, H);
 
-        // Fundo da pista com gradiente
         const bgGrad = ctx.createLinearGradient(0, 0, 0, H);
         bgGrad.addColorStop(0, '#090b10');
         bgGrad.addColorStop(1, '#131a29');
         ctx.fillStyle = bgGrad;
         ctx.fillRect(0, 0, W, H);
 
-        const numLanes = DRUM_PIECES.length; // 9 pistas
+        const numLanes = DRUM_PIECES.length;
         const laneW = W / numLanes;
         const hitLineY = H - 46;
 
-        // Desenhar divisórias das 9 pistas e cabeçalho inferior (Strike Zone)
         DRUM_PIECES.forEach((piece, idx) => {
           const x = idx * laneW;
           ctx.strokeStyle = 'rgba(255,255,255,0.06)';
@@ -2445,7 +1762,6 @@
           ctx.lineTo(x, H);
           ctx.stroke();
 
-          // Receptor na linha de impacto
           ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
           ctx.strokeStyle = piece.color;
           ctx.lineWidth = 2;
@@ -2464,7 +1780,6 @@
           ctx.fillText(piece.short, x + laneW / 2, H - 8);
         });
 
-        // Linha horizontal luminosa de impacto
         ctx.strokeStyle = 'rgba(59, 130, 246, 0.55)';
         ctx.lineWidth = 2;
         ctx.beginPath();
@@ -2472,14 +1787,13 @@
         ctx.lineTo(W, hitLineY);
         ctx.stroke();
 
-        // Calcular posição contínua (em steps) para deslizamento suave 60fps
         if (activeExpandedScore.length > 0) {
           let fracStep = 0;
           if (isPlaying && !isCountInPhase && stepDurationMs > 0) {
             fracStep = Math.min(0.99, (now - lastStepTimestamp) / stepDurationMs);
           }
 
-          const pixelsPerStep = 22; // Distância vertical entre semicolcheias
+          const pixelsPerStep = 22;
           const visibleStepsAhead = 14;
 
           for (let offset = 0; offset <= visibleStepsAhead; offset++) {
@@ -2499,7 +1813,6 @@
             const y = hitLineY - (offset - fracStep) * pixelsPerStep;
             if (y < -20 || y > hitLineY + 12) continue;
 
-            // Linha guia de tempo forte (1, 2, 3, 4)
             if (stepInBar % 4 === 0) {
               ctx.strokeStyle = stepInBar === 0 ? 'rgba(251, 191, 36, 0.35)' : 'rgba(148, 163, 184, 0.14)';
               ctx.lineWidth = stepInBar === 0 ? 2 : 1;
@@ -2516,7 +1829,6 @@
               }
             }
 
-            // Desenhar notas daquele step
             const stepPieces = barData.steps[stepInBar] || [];
             stepPieces.forEach(code => {
               const piece = PIECE_MAP[code];
@@ -2549,13 +1861,13 @@
     }
 
     /********************************************************************
-     * 11. NAVEGAÇÃO ENTRE TELAS E UTILITÁRIOS
+     * 10. NAVEGAÇÃO ENTRE TELAS E UTILITÁRIOS
      ********************************************************************/
     function switchMainView(view) {
       if (view !== 'practice' && isPlaying) {
         pausePlayback();
       }
-      ['catalog', 'practice', 'teacher'].forEach(v => {
+      ['catalog', 'practice'].forEach(v => {
         document.getElementById(`view-${v}`).classList.toggle('hidden', v !== view);
       });
 
@@ -2566,12 +1878,6 @@
       document.getElementById('nav-btn-practice').className = view === 'practice'
         ? 'px-3.5 py-1.5 rounded-lg text-xs font-bold bg-blue-600 text-white transition'
         : 'px-3.5 py-1.5 rounded-lg text-xs font-bold text-slate-300 hover:text-white transition';
-    }
-
-    function copyText(txt) {
-      navigator.clipboard.writeText(txt).then(() => {
-        showToast('Copiado para a área de transferência!');
-      });
     }
 
     function showToast(msg, type = 'info') {
@@ -2589,9 +1895,8 @@
       }, 3200);
     }
 
-    // Inicialização Geral ao carregar a página
+    // Inicialização Direta (Acesso 100% Aberto)
     window.addEventListener('DOMContentLoaded', () => {
-      // Auditar distribuição obrigatória 40 Curtas / 40 Médias / 20 Longas
       const shortCount = SONGS_DB.filter(s => s.durationCategory === 'curta').length;
       const medCount = SONGS_DB.filter(s => s.durationCategory === 'media').length;
       const longCount = SONGS_DB.filter(s => s.durationCategory === 'longa').length;
@@ -2600,13 +1905,10 @@
       document.getElementById('stat-long-count').textContent = longCount;
 
       populateBandsDropdown();
-      studentsList = loadStudentsDB();
-      currentStudent = studentsList[0];
-      updateStudentHeaderUI();
+      updateHeaderProgressUI();
       renderModulePills();
       renderCatalog();
 
-      // Carregar primeira música no Estúdio por padrão
       activeSong = SONGS_DB[0];
       currentBpm = activeSong.bpm;
       rebuildScoreAndUI();
