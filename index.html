@@ -1,0 +1,2617 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DrumAcademy Pro — Plataforma Interativa de Bateria Rock</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace']
+          },
+          colors: {
+            studio: {
+              950: '#090b10',
+              900: '#0f131c',
+              850: '#151b28',
+              800: '#1c2436',
+              700: '#2a354d'
+            }
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      background-color: #090b10;
+      color: #f1f5f9;
+      font-family: 'Inter', sans-serif;
+      overflow-x: hidden;
+    }
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: #0f131c; }
+    ::-webkit-scrollbar-thumb { background: #2a354d; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #3b82f6; }
+
+    .drum-pad-glow {
+      transition: transform 0.06s ease-out, filter 0.06s ease-out, stroke-width 0.06s ease-out;
+      cursor: pointer;
+    }
+    .drum-pad-active {
+      transform: scale(1.07);
+      filter: drop-shadow(0 0 16px currentColor) brightness(1.45);
+    }
+    .glass-panel {
+      background: rgba(21, 27, 40, 0.85);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .step-cell {
+      transition: all 0.08s ease;
+    }
+    .step-cell.active-playhead {
+      background: rgba(59, 130, 246, 0.22);
+      box-shadow: inset 0 0 0 2px #3b82f6;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col bg-studio-950 text-slate-100 select-none">
+
+  <!-- ==================== TELA DE AUTENTICAÇÃO (LOGIN ALUNO / PROFESSOR) ==================== -->
+  <div id="auth-screen" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-studio-950/95 overflow-y-auto">
+    <div class="max-w-4xl w-full grid md:grid-cols-12 rounded-2xl overflow-hidden shadow-2xl border border-slate-800 bg-studio-900 my-auto">
+      
+      <!-- Coluna Apresentação -->
+      <div class="md:col-span-5 bg-gradient-to-br from-blue-950 via-studio-900 to-amber-950/40 p-8 flex flex-col justify-between border-b md:border-b-0 md:border-r border-slate-800">
+        <div>
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/30 text-blue-400 text-xs font-semibold mb-4">
+            <span>🥁</span> STUDIO ENGINE v3.5 • ZERO-LATENCY
+          </div>
+          <h1 class="text-3xl font-extrabold tracking-tight text-white">
+            DrumAcademy <span class="text-amber-400">Pro</span>
+          </h1>
+          <p class="text-sm text-slate-300 mt-2 leading-relaxed">
+            Método progressivo de Bateria Rock com <strong>10 Módulos</strong> e <strong>100 Músicas Clássicas</strong> com estrutura de compassos 100% fiel às gravações originais.
+          </p>
+
+          <div class="mt-6 space-y-3 text-xs text-slate-300">
+            <div class="flex items-center gap-2.5">
+              <span class="w-6 h-6 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold">40</span>
+              <span><strong>Músicas Curtas</strong> (1m30s a 2m45s — Ramones, Beatles, Nirvana...)</span>
+            </div>
+            <div class="flex items-center gap-2.5">
+              <span class="w-6 h-6 rounded-lg bg-blue-500/20 text-blue-400 flex items-center justify-center font-bold">40</span>
+              <span><strong>Músicas Médias</strong> (2m46s a 4m15s — AC/DC, Queen, Foo Fighters...)</span>
+            </div>
+            <div class="flex items-center gap-2.5">
+              <span class="w-6 h-6 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold">20</span>
+              <span><strong>Músicas Longas</strong> (&gt; 4m16s — Pink Floyd, Led Zeppelin, Metallica...)</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-8 pt-4 border-t border-slate-800/80 space-y-2">
+          <p class="text-[11px] uppercase tracking-wider text-slate-400 font-semibold">Atalhos de Demonstração Imediata</p>
+          <div class="grid grid-cols-2 gap-2">
+            <button onclick="quickDemoLogin()" class="px-3 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs transition flex items-center justify-center gap-1.5 shadow-lg shadow-amber-500/20">
+              <span>⚡</span> Acesso Rápido Demo (Aluno)
+            </button>
+            <button onclick="openTeacherLoginModal()" class="px-3 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs border border-slate-700 transition flex items-center justify-center gap-1.5">
+              <span>🎓</span> Painel do Professor
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Coluna Formulários de Acesso -->
+      <div class="md:col-span-7 p-8 flex flex-col justify-center">
+        <!-- Abas de Login -->
+        <div class="flex rounded-xl bg-studio-950 p-1 border border-slate-800 mb-6">
+          <button id="tab-login-code" onclick="switchAuthTab('code')" class="flex-1 py-2 text-xs font-bold rounded-lg bg-blue-600 text-white transition">
+            🔑 Código de Acesso Exclusivo
+          </button>
+          <button id="tab-login-cred" onclick="switchAuthTab('cred')" class="flex-1 py-2 text-xs font-bold rounded-lg text-slate-400 hover:text-white transition">
+            👤 Login e Senha
+          </button>
+          <button id="tab-login-prof" onclick="switchAuthTab('prof')" class="flex-1 py-2 text-xs font-bold rounded-lg text-slate-400 hover:text-white transition">
+            🎓 Área do Professor
+          </button>
+        </div>
+
+        <!-- Form 1: Código Exclusivo -->
+        <div id="auth-form-code" class="space-y-4">
+          <div>
+            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
+              Código do Aluno (Fornecido pelo Professor)
+            </label>
+            <input id="input-student-code" type="text" placeholder="Ex: DRUM-DEMO-M10 ou cole seu Token Portátil"
+              class="w-full px-4 py-3 rounded-xl bg-studio-950 border border-slate-700 focus:border-blue-500 focus:outline-none font-mono text-sm text-amber-300" />
+            <p class="text-[11px] text-slate-400 mt-1.5">
+              Aceita códigos curtos locais (ex: <code class="text-amber-400">DRUM-LUCAS-M05-4821</code>) ou códigos portáteis Base64 gerados em outro computador.
+            </p>
+          </div>
+          <button onclick="loginWithCode()" class="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm shadow-lg shadow-blue-600/25 transition">
+            Entrar no Estúdio com Código
+          </button>
+        </div>
+
+        <!-- Form 2: Login e Senha -->
+        <div id="auth-form-cred" class="space-y-4 hidden">
+          <div>
+            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Usuário / Login</label>
+            <input id="input-student-user" type="text" placeholder="Ex: demo"
+              class="w-full px-4 py-2.5 rounded-xl bg-studio-950 border border-slate-700 focus:border-blue-500 focus:outline-none text-sm" />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Senha</label>
+            <input id="input-student-pass" type="password" placeholder="••••••"
+              class="w-full px-4 py-2.5 rounded-xl bg-studio-950 border border-slate-700 focus:border-blue-500 focus:outline-none text-sm" />
+          </div>
+          <button onclick="loginWithCredentials()" class="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm shadow-lg shadow-blue-600/25 transition">
+            Acessar Conta do Aluno
+          </button>
+          <p class="text-xs text-slate-400 text-center">
+            Conta padrão de teste: Login <code class="text-amber-400">aluno</code> / Senha <code class="text-amber-400">1234</code>
+          </p>
+        </div>
+
+        <!-- Form 3: Área do Professor -->
+        <div id="auth-form-prof" class="space-y-4 hidden">
+          <div class="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-xs text-amber-200">
+            <strong>Acesso Restrito do Educador:</strong> Gerencie alunos, libere módulos progressivos (1 a 10) e gere códigos portáteis Base64.
+            <br><span class="text-amber-400 font-mono">Senha inicial padrão: prof2026</span>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Senha Mestre do Professor</label>
+            <input id="input-teacher-pass" type="password" value="prof2026"
+              class="w-full px-4 py-2.5 rounded-xl bg-studio-950 border border-slate-700 focus:border-amber-500 focus:outline-none text-sm font-mono" />
+          </div>
+          <button onclick="loginTeacher()" class="w-full py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-sm shadow-lg shadow-amber-500/20 transition">
+            Abrir Portal do Professor
+          </button>
+        </div>
+
+        <div id="auth-error-msg" class="mt-4 hidden p-3 rounded-xl bg-rose-500/15 border border-rose-500/40 text-rose-300 text-xs font-medium"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== TOPBAR PRINCIPAL ==================== -->
+  <header class="sticky top-0 z-30 bg-studio-900/95 backdrop-blur border-b border-slate-800 px-4 py-2.5">
+    <div class="max-w-[1600px] mx-auto flex flex-wrap items-center justify-between gap-3">
+      <!-- Logo & Navegação -->
+      <div class="flex items-center gap-4">
+        <div class="flex items-center gap-2.5 cursor-pointer" onclick="switchMainView('catalog')">
+          <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500 to-amber-500 flex items-center justify-center text-slate-950 font-black text-lg shadow">
+            🥁
+          </div>
+          <div>
+            <div class="font-extrabold text-base tracking-tight leading-none">
+              DrumAcademy <span class="text-amber-400">Pro</span>
+            </div>
+            <div class="text-[11px] text-slate-400">10 Módulos • 100 Clássicos do Rock</div>
+          </div>
+        </div>
+
+        <nav class="flex items-center gap-1 bg-studio-950 p-1 rounded-xl border border-slate-800">
+          <button id="nav-btn-catalog" onclick="switchMainView('catalog')" class="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-blue-600 text-white transition">
+            📚 Catálogo (100 Músicas)
+          </button>
+          <button id="nav-btn-practice" onclick="switchMainView('practice')" class="px-3.5 py-1.5 rounded-lg text-xs font-bold text-slate-300 hover:text-white transition">
+            🎯 Estúdio de Treino
+          </button>
+          <button id="nav-btn-teacher" onclick="openTeacherPortalFromTopbar()" class="px-3.5 py-1.5 rounded-lg text-xs font-bold text-amber-400 hover:bg-amber-500/10 transition">
+            🎓 Área do Professor
+          </button>
+        </nav>
+      </div>
+
+      <!-- Status do Aluno Logado -->
+      <div class="flex items-center gap-3">
+        <div class="hidden sm:flex items-center gap-4 px-3.5 py-1.5 rounded-xl bg-studio-950 border border-slate-800 text-xs">
+          <div>
+            <span class="text-slate-400">Aluno:</span>
+            <strong id="header-student-name" class="text-white ml-1">Visitante</strong>
+          </div>
+          <div class="h-3 w-px bg-slate-700"></div>
+          <div>
+            <span class="text-slate-400">Liberado até:</span>
+            <span id="header-student-module" class="ml-1 px-2 py-0.5 rounded bg-blue-500/20 text-blue-300 font-bold">Módulo 10</span>
+          </div>
+          <div class="h-3 w-px bg-slate-700"></div>
+          <div class="flex items-center gap-1 text-amber-400 font-bold">
+            <span>⭐</span>
+            <span id="header-student-stars">0</span>
+            <span class="text-slate-400 font-normal">/ 300</span>
+          </div>
+          <div class="h-3 w-px bg-slate-700"></div>
+          <div class="text-emerald-400 font-mono font-semibold" id="header-student-Completed">0/100 concluídas</div>
+        </div>
+
+        <button onclick="logoutUser()" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-rose-600/80 text-xs font-semibold text-slate-200 transition">
+          Sair / Trocar Conta
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==================== CONTEÚDO PRINCIPAL ==================== -->
+  <main class="flex-1 max-w-[1600px] w-full mx-auto p-4">
+
+    <!-- ==================== VIEW 1: CATÁLOGO DE MÓDULOS E 100 MÚSICAS ==================== -->
+    <section id="view-catalog" class="space-y-5">
+      
+      <!-- Resumo Pedagógico e Estatísticas do Catálogo -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+        <div class="lg:col-span-8 glass-panel rounded-2xl p-5 flex flex-col justify-between">
+          <div>
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <span class="text-xs font-bold uppercase tracking-wider text-blue-400" id="module-banner-tag">ARQUITETURA PEDAGÓGICA PROGRESSIVA</span>
+              <span class="text-xs text-slate-400 font-mono" id="catalog-count-summary">Exibindo 100 músicas</span>
+            </div>
+            <h2 class="text-xl font-extrabold text-white mt-1" id="module-banner-title">
+              Selecione um Módulo ou Filtre o Repertório
+            </h2>
+            <p class="text-xs text-slate-300 mt-1 leading-relaxed" id="module-banner-desc">
+              Cada música preserva rigorosamente o número total de compassos e seções (Intro, Verso, Refrão, Ponte, Solo, Outro) da gravação original para você tocar junto sem perder a sincronia.
+            </p>
+          </div>
+
+          <!-- Seletor Horizontal dos 10 Módulos -->
+          <div class="mt-4 pt-3 border-t border-slate-800/80">
+            <div class="text-[11px] font-semibold uppercase tracking-wider text-slate-400 mb-2">Filtrar por Módulo Pedagógico (1 ao 10):</div>
+            <div id="module-pills-container" class="flex flex-wrap gap-1.5"></div>
+          </div>
+        </div>
+
+        <!-- Distribuição Obrigatória de Duração -->
+        <div class="lg:col-span-4 glass-panel rounded-2xl p-5 flex flex-col justify-between">
+          <div class="flex items-center justify-between">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-300">Distribuição do Catálogo (100 Músicas)</h3>
+            <span class="px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-300 text-[11px] font-mono">100% Verificado</span>
+          </div>
+          <div class="grid grid-cols-3 gap-2 my-3">
+            <button onclick="setDurationFilter('curta')" class="p-2.5 rounded-xl bg-studio-950 border border-slate-800 hover:border-emerald-500/60 text-left transition">
+              <div class="text-lg font-extrabold text-emerald-400 font-mono" id="stat-short-count">40</div>
+              <div class="text-[11px] font-semibold text-white">Curtas</div>
+              <div class="text-[10px] text-slate-400">1m30s – 2m45s</div>
+            </button>
+            <button onclick="setDurationFilter('media')" class="p-2.5 rounded-xl bg-studio-950 border border-slate-800 hover:border-blue-500/60 text-left transition">
+              <div class="text-lg font-extrabold text-blue-400 font-mono" id="stat-medium-count">40</div>
+              <div class="text-[11px] font-semibold text-white">Médias</div>
+              <div class="text-[10px] text-slate-400">2m46s – 4m15s</div>
+            </button>
+            <button onclick="setDurationFilter('longa')" class="p-2.5 rounded-xl bg-studio-950 border border-slate-800 hover:border-amber-500/60 text-left transition">
+              <div class="text-lg font-extrabold text-amber-400 font-mono" id="stat-long-count">20</div>
+              <div class="text-[11px] font-semibold text-white">Longas</div>
+              <div class="text-[10px] text-slate-400">&gt; 4m16s</div>
+            </button>
+          </div>
+          <div class="text-[11px] text-slate-400 flex items-center justify-between">
+            <span>Tempo total praticado pelo aluno:</span>
+            <strong id="student-practice-time" class="text-amber-400 font-mono">0 min</strong>
+          </div>
+        </div>
+      </div>
+
+      <!-- Barra de Filtros Rápidos -->
+      <div class="glass-panel rounded-2xl p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 items-center">
+        <div>
+          <label class="block text-[10px] font-bold uppercase text-slate-400 mb-1">Buscar Música ou Banda</label>
+          <input id="filter-search" type="text" oninput="renderCatalog()" placeholder="Ex: Queen, Nirvana, Back in Black..."
+            class="w-full px-3 py-2 rounded-xl bg-studio-950 border border-slate-800 text-xs focus:border-blue-500 focus:outline-none" />
+        </div>
+        <div>
+          <label class="block text-[10px] font-bold uppercase text-slate-400 mb-1">Duração</label>
+          <select id="filter-duration" onchange="renderCatalog()" class="w-full px-3 py-2 rounded-xl bg-studio-950 border border-slate-800 text-xs focus:border-blue-500 focus:outline-none">
+            <option value="all">Todas as Durações (100)</option>
+            <option value="curta">⚡ Curtas: 1m30s a 2m45s (40)</option>
+            <option value="media">🎸 Médias: 2m46s a 4m15s (40)</option>
+            <option value="longa">🔥 Longas: Acima de 4m16s (20)</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-[10px] font-bold uppercase text-slate-400 mb-1">Banda de Rock</label>
+          <select id="filter-band" onchange="renderCatalog()" class="w-full px-3 py-2 rounded-xl bg-studio-950 border border-slate-800 text-xs focus:border-blue-500 focus:outline-none">
+            <option value="all">Todas as Bandas</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-[10px] font-bold uppercase text-slate-400 mb-1">Status do Aluno</label>
+          <select id="filter-status" onchange="renderCatalog()" class="w-full px-3 py-2 rounded-xl bg-studio-950 border border-slate-800 text-xs focus:border-blue-500 focus:outline-none">
+            <option value="all">Todas (Concluídas + Pendentes)</option>
+            <option value="completed">✅ Concluídas pelo Aluno</option>
+            <option value="pending">⏳ Pendentes de Conclusão</option>
+          </select>
+        </div>
+        <div class="flex items-end h-full pt-4">
+          <button onclick="resetCatalogFilters()" class="w-full py-2 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-300 transition">
+            Limpar Filtros
+          </button>
+        </div>
+      </div>
+
+      <!-- Grid de Cards das Músicas -->
+      <div id="songs-grid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4"></div>
+    </section>
+
+    <!-- ==================== VIEW 2: PAINEL DE TREINO VISUAL LÚDICO ==================== -->
+    <section id="view-practice" class="hidden space-y-4">
+      
+      <!-- Cabeçalho da Música Atual + Controles Principais de Transporte -->
+      <div class="glass-panel rounded-2xl p-4 flex flex-wrap items-center justify-between gap-4">
+        <div class="flex items-center gap-3">
+          <button onclick="switchMainView('catalog')" class="px-3 py-2 rounded-xl bg-studio-950 hover:bg-slate-800 border border-slate-700 text-xs font-bold text-slate-300 transition">
+            ← Catálogo
+          </button>
+          <div>
+            <div class="flex items-center gap-2">
+              <span id="practice-module-badge" class="px-2 py-0.5 rounded bg-blue-500/20 text-blue-400 font-mono text-[11px] font-bold">MÓDULO 1</span>
+              <span id="practice-duration-badge" class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-mono text-[11px] font-bold">2:02 • CURTA</span>
+              <span id="practice-Meter-badge" class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 font-mono text-[11px] font-bold">4/4</span>
+            </div>
+            <h2 id="practice-song-title" class="text-xl font-extrabold text-white mt-0.5">We Will Rock You — Queen</h2>
+            <p id="practice-song-focus" class="text-xs text-slate-400">Foco Técnico: Pulso firme de Bumbo (1 e 3) e Caixa (2 e 4)</p>
+          </div>
+        </div>
+
+        <!-- Botões Play / Pause / Stop / Concluir -->
+        <div class="flex flex-wrap items-center gap-2">
+          <button id="btn-play-toggle" onclick="togglePlay()" class="px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-sm flex items-center gap-2 shadow-lg shadow-emerald-500/20 transition">
+            <span id="btn-play-icon">▶</span> <span id="btn-play-label">INICIAR c/ COUNT-IN</span>
+          </button>
+          <button onclick="stopPlayback(true)" class="px-3.5 py-2.5 rounded-xl bg-studio-950 hover:bg-slate-800 border border-slate-700 text-xs font-bold text-slate-200 transition">
+            ⏹ Reiniciar (Compasso 1)
+          </button>
+          <button id="btn-mark-complete" onclick="markCurrentSongCompleted()" class="px-4 py-2.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/40 text-amber-300 text-xs font-bold transition">
+            ⭐ Concluir Música
+          </button>
+        </div>
+      </div>
+
+      <!-- Barra de Controles Pedagógicos: BPM, Nível 1-2-3, Loop A-B, Metrônomo e Mute Guia -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-3">
+        
+        <!-- Controle de BPM -->
+        <div class="lg:col-span-4 glass-panel rounded-2xl p-3.5 flex flex-col justify-between">
+          <div class="flex items-center justify-between">
+            <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Controle de Andamento (BPM)</span>
+            <div class="font-mono text-sm font-extrabold text-blue-400">
+              <span id="bpm-current-display">110</span> BPM <span id="bpm-percent-display" class="text-xs text-slate-400">(100%)</span>
+            </div>
+          </div>
+          <input id="bpm-slider" type="range" min="40" max="220" value="110" oninput="onBpmSliderChange(this.value)"
+            class="w-full accent-blue-500 my-2 cursor-pointer" />
+          <div class="grid grid-cols-5 gap-1">
+            <button onclick="setBpmPercentage(0.5)" class="py-1 rounded-lg bg-studio-950 hover:bg-slate-800 border border-slate-800 text-[11px] font-mono font-bold text-slate-300">50%</button>
+            <button onclick="setBpmPercentage(0.75)" class="py-1 rounded-lg bg-studio-950 hover:bg-slate-800 border border-slate-800 text-[11px] font-mono font-bold text-slate-300">75%</button>
+            <button onclick="setBpmPercentage(0.9)" class="py-1 rounded-lg bg-studio-950 hover:bg-slate-800 border border-slate-800 text-[11px] font-mono font-bold text-slate-300">90%</button>
+            <button onclick="setBpmPercentage(1.0)" class="py-1 rounded-lg bg-blue-600/30 border border-blue-500/40 text-[11px] font-mono font-bold text-blue-300">100% Orig</button>
+            <button onclick="setBpmPercentage(1.1)" class="py-1 rounded-lg bg-studio-950 hover:bg-slate-800 border border-slate-800 text-[11px] font-mono font-bold text-amber-300">110%</button>
+          </div>
+        </div>
+
+        <!-- Nível de Dificuldade dentro da Música (1, 2, 3) -->
+        <div class="lg:col-span-4 glass-panel rounded-2xl p-3.5 flex flex-col justify-between">
+          <div class="flex items-center justify-between">
+            <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Nível de Adaptação da Partitura</span>
+            <span id="difficulty-desc-badge" class="text-[11px] text-amber-400 font-semibold">Groove Padrão do Módulo</span>
+          </div>
+          <div class="grid grid-cols-3 gap-1.5 my-auto pt-2">
+            <button id="lvl-btn-1" onclick="setSongDifficulty(1)" class="p-2 rounded-xl bg-studio-950 border border-slate-800 text-left transition">
+              <div class="text-xs font-extrabold text-emerald-400">Nível 1 • Base</div>
+              <div class="text-[10px] text-slate-400 leading-tight mt-0.5">Pulso super simplificado</div>
+            </button>
+            <button id="lvl-btn-2" onclick="setSongDifficulty(2)" class="p-2 rounded-xl bg-blue-600/25 border border-blue-500 text-left transition">
+              <div class="text-xs font-extrabold text-blue-300">Nível 2 • Groove</div>
+              <div class="text-[10px] text-slate-300 leading-tight mt-0.5">Levada padrão do módulo</div>
+            </button>
+            <button id="lvl-btn-3" onclick="setSongDifficulty(3)" class="p-2 rounded-xl bg-studio-950 border border-slate-800 text-left transition">
+              <div class="text-xs font-extrabold text-amber-400">Nível 3 • Pro</div>
+              <div class="text-[10px] text-slate-400 leading-tight mt-0.5">Groove + Viradas completas</div>
+            </button>
+          </div>
+        </div>
+
+        <!-- Loop de Estudo (A-B) e Controles de Áudio (Metrônomo / Mute Guia / Count-in) -->
+        <div class="lg:col-span-4 glass-panel rounded-2xl p-3.5 flex flex-col justify-between">
+          <div class="flex items-center justify-between mb-1">
+            <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Loop de Seção (A-B) & Áudio</span>
+            <select id="section-loop-select" onchange="onSectionLoopChange(this.value)" class="px-2 py-1 rounded-lg bg-studio-950 border border-slate-700 text-xs text-amber-300 font-semibold">
+              <option value="all">🔁 Música Completa (Sem Loop)</option>
+            </select>
+          </div>
+
+          <div class="grid grid-cols-3 gap-1.5 pt-1">
+            <button id="toggle-metronome-btn" onclick="toggleMetronome()" class="py-2 px-2 rounded-xl bg-blue-600/25 border border-blue-500/60 text-blue-200 text-[11px] font-bold transition flex items-center justify-center gap-1">
+              <span>⏱️</span> Metrônomo: ON
+            </button>
+            <button id="toggle-guide-btn" onclick="toggleDrumGuide()" class="py-2 px-2 rounded-xl bg-emerald-600/25 border border-emerald-500/60 text-emerald-200 text-[11px] font-bold transition flex items-center justify-center gap-1">
+              <span>🔊</span> Bateria Guia: ON
+            </button>
+            <button id="toggle-countin-btn" onclick="toggleCountIn()" class="py-2 px-2 rounded-xl bg-amber-500/25 border border-amber-500/60 text-amber-200 text-[11px] font-bold transition flex items-center justify-center gap-1">
+              <span>1-2-3-4</span> Count-in: ON
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Barra de Estrutura Completa de Compassos (Timeline Interativa da Música) -->
+      <div class="glass-panel rounded-2xl p-3.5">
+        <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-extrabold uppercase tracking-wider text-amber-400" id="current-section-label">SEÇÃO: INTRO</span>
+            <span class="text-xs text-slate-400 font-mono" id="current-bar-counter">Compasso 1 de 64</span>
+            <span id="fill-alert-badge" class="hidden px-2 py-0.5 rounded bg-rose-500/20 border border-rose-500/50 text-rose-300 text-[11px] font-extrabold animate-pulse">
+              🔥 COMPASSO DE VIRADA (FILL)!
+            </span>
+          </div>
+          <div class="text-xs font-mono text-slate-400">
+            Clique em qualquer seção abaixo para pular diretamente ou ativar Loop A-B:
+          </div>
+        </div>
+        <!-- Mapa de Seções da Música -->
+        <div id="song-sections-timeline" class="flex flex-wrap gap-1.5"></div>
+      </div>
+
+      <!-- PAINEL VISUAL DUPLO SINCRONIZADO: PISTA DRUM HERO + BATERIA VISTA DE CIMA -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+        
+        <!-- 1A. Pista Estilo Drum Hero / Highway (Canvas 60fps) -->
+        <div class="lg:col-span-7 glass-panel rounded-2xl p-4 flex flex-col">
+          <div class="flex items-center justify-between mb-2">
+            <div>
+              <h3 class="text-sm font-extrabold text-white flex items-center gap-2">
+                <span>🛣️</span> Pista Sincronizada "Drum Highway"
+              </h3>
+              <p class="text-[11px] text-slate-400">As notas descem em direção à linha de impacto no tempo exato do compasso</p>
+            </div>
+            <div id="countin-overlay-badge" class="hidden px-3 py-1 rounded-xl bg-amber-500 text-slate-950 font-black font-mono text-sm">
+              COUNT-IN: 1
+            </div>
+          </div>
+
+          <div class="relative flex-1 min-h-[310px] rounded-xl overflow-hidden bg-studio-950 border border-slate-800">
+            <canvas id="highway-canvas" width="760" height="320" class="w-full h-full block"></canvas>
+          </div>
+
+          <!-- Legenda de Cores e Atalhos de Teclado -->
+          <div id="drum-legend-bar" class="mt-3 grid grid-cols-3 sm:grid-cols-9 gap-1.5 text-[10px]"></div>
+        </div>
+
+        <!-- 1B. Bateria Interativa Vista de Cima (SVG Top-Down Kit) -->
+        <div class="lg:col-span-5 glass-panel rounded-2xl p-4 flex flex-col justify-between">
+          <div class="flex items-center justify-between mb-2">
+            <div>
+              <h3 class="text-sm font-extrabold text-white">🥁 Bateria Interativa (Vista Superior)</h3>
+              <p class="text-[11px] text-slate-400">Acende automaticamente na música • Clique ou use o teclado para tocar!</p>
+            </div>
+            <span class="px-2 py-0.5 rounded bg-slate-800 text-[10px] font-mono text-slate-300">Teclas: Espaço, C, X, Z, T, Y, U, K, R</span>
+          </div>
+
+          <!-- SVG Top-Down Kit -->
+          <div class="relative flex-1 flex items-center justify-center bg-studio-950 rounded-xl border border-slate-800 p-2">
+            <svg viewBox="0 0 500 330" class="w-full max-h-[300px] select-none">
+              <defs>
+                <radialGradient id="gradCymbal" cx="50%" cy="50%" r="50%">
+                  <stop offset="0%" stop-color="#fde047" stop-opacity="0.9"/>
+                  <stop offset="70%" stop-color="#eab308" stop-opacity="0.75"/>
+                  <stop offset="100%" stop-color="#ca8a04" stop-opacity="0.95"/>
+                </radialGradient>
+                <radialGradient id="gradDrum" cx="50%" cy="50%" r="50%">
+                  <stop offset="0%" stop-color="#1e293b"/>
+                  <stop offset="82%" stop-color="#0f172a"/>
+                  <stop offset="100%" stop-color="#334155"/>
+                </radialGradient>
+              </defs>
+
+              <!-- Tapete de Bateria -->
+              <rect x="25" y="15" width="450" height="300" rx="22" fill="#111827" stroke="#1f2937" stroke-width="2"/>
+
+              <!-- BUMBO / KICK (Centro/Fundo) -->
+              <g id="svg-pad-B" onclick="triggerManualPiece('B')" class="drum-pad-glow" style="color:#ef4444; transform-origin: 250px 195px;">
+                <rect x="195" y="130" width="110" height="95" rx="14" fill="#7f1d1d" stroke="#ef4444" stroke-width="4"/>
+                <rect x="233" y="225" width="34" height="45" rx="6" fill="#374151" stroke="#ef4444" stroke-width="2"/>
+                <text x="250" y="175" text-anchor="middle" fill="#fecaca" font-size="15" font-weight="800">BUMBO (B)</text>
+                <text x="250" y="195" text-anchor="middle" fill="#fca5a5" font-size="10" font-family="monospace">[ESPAÇO / B]</text>
+              </g>
+
+              <!-- PRATO DE ATAQUE / CRASH (Esquerda Superior) -->
+              <g id="svg-pad-K" onclick="triggerManualPiece('K')" class="drum-pad-glow" style="color:#fbbf24; transform-origin: 120px 68px;">
+                <circle cx="120" cy="68" r="46" fill="url(#gradCymbal)" stroke="#fef08a" stroke-width="3"/>
+                <circle cx="120" cy="68" r="10" fill="#713f12"/>
+                <text x="120" y="64" text-anchor="middle" fill="#090b10" font-size="12" font-weight="800">CRASH (K)</text>
+                <text x="120" y="79" text-anchor="middle" fill="#090b10" font-size="9" font-weight="700">Ataque</text>
+              </g>
+
+              <!-- PRATO DE CONDUÇÃO / RIDE (Direita Superior) -->
+              <g id="svg-pad-R" onclick="triggerManualPiece('R')" class="drum-pad-glow" style="color:#22d3ee; transform-origin: 385px 78px;">
+                <circle cx="385" cy="78" r="52" fill="#0e7490" stroke="#22d3ee" stroke-width="3.5"/>
+                <circle cx="385" cy="78" r="12" fill="#164e63" stroke="#67e8f9" stroke-width="2"/>
+                <text x="385" y="74" text-anchor="middle" fill="#ecfeff" font-size="13" font-weight="800">RIDE (R)</text>
+                <text x="385" y="90" text-anchor="middle" fill="#cffafe" font-size="9">Condução</text>
+              </g>
+
+              <!-- CHIMBAL FECHADO / HI-HAT (Esquerda Média) -->
+              <g id="svg-pad-X" onclick="triggerManualPiece('X')" class="drum-pad-glow" style="color:#eab308; transform-origin: 78px 175px;">
+                <circle cx="78" cy="175" r="40" fill="#854d0e" stroke="#facc15" stroke-width="3.5"/>
+                <circle cx="78" cy="175" r="8" fill="#fef08a"/>
+                <text x="78" y="172" text-anchor="middle" fill="#fef9c3" font-size="11" font-weight="800">CHIMBAL (X)</text>
+                <text x="78" y="186" text-anchor="middle" fill="#fde047" font-size="9">Fechado</text>
+              </g>
+
+              <!-- CHIMBAL ABERTO / OPEN HI-HAT (Esquerda Inferior) -->
+              <g id="svg-pad-O" onclick="triggerManualPiece('O')" class="drum-pad-glow" style="color:#f97316; transform-origin: 78px 265px;">
+                <circle cx="78" cy="265" r="33" fill="#7c2d12" stroke="#f97316" stroke-width="3" stroke-dasharray="6 3"/>
+                <text x="78" y="262" text-anchor="middle" fill="#ffedd5" font-size="11" font-weight="800">ABERTO (O)</text>
+                <text x="78" y="275" text-anchor="middle" fill="#fdba74" font-size="8">[Tecla Z]</text>
+              </g>
+
+              <!-- CAIXA / SNARE (Esquerda-Centro Inferior) -->
+              <g id="svg-pad-C" onclick="triggerManualPiece('C')" class="drum-pad-glow" style="color:#3b82f6; transform-origin: 170px 235px;">
+                <circle cx="170" cy="235" r="46" fill="url(#gradDrum)" stroke="#3b82f6" stroke-width="5"/>
+                <circle cx="170" cy="235" r="36" fill="none" stroke="#60a5fa" stroke-width="1" stroke-dasharray="4 4"/>
+                <text x="170" y="232" text-anchor="middle" fill="#dbeafe" font-size="14" font-weight="800">CAIXA (C)</text>
+                <text x="170" y="248" text-anchor="middle" fill="#93c5fd" font-size="10">Snare</text>
+              </g>
+
+              <!-- TOM 1 (Centro-Esquerda Superior) -->
+              <g id="svg-pad-T1" onclick="triggerManualPiece('T1')" class="drum-pad-glow" style="color:#10b981; transform-origin: 205px 98px;">
+                <circle cx="205" cy="98" r="36" fill="url(#gradDrum)" stroke="#10b981" stroke-width="4"/>
+                <text x="205" y="96" text-anchor="middle" fill="#d1fae5" font-size="12" font-weight="800">TOM 1 (T1)</text>
+                <text x="205" y="110" text-anchor="middle" fill="#6ee7b7" font-size="9">[Tecla T]</text>
+              </g>
+
+              <!-- TOM 2 (Centro-Direita Superior) -->
+              <g id="svg-pad-T2" onclick="triggerManualPiece('T2')" class="drum-pad-glow" style="color:#8b5cf6; transform-origin: 295px 98px;">
+                <circle cx="295" cy="98" r="38" fill="url(#gradDrum)" stroke="#8b5cf6" stroke-width="4"/>
+                <text x="295" y="96" text-anchor="middle" fill="#ede9fe" font-size="12" font-weight="800">TOM 2 (T2)</text>
+                <text x="295" y="110" text-anchor="middle" fill="#c4b5fd" font-size="9">[Tecla Y]</text>
+              </g>
+
+              <!-- SURDO / FLOOR TOM (Direita Inferior) -->
+              <g id="svg-pad-S" onclick="triggerManualPiece('S')" class="drum-pad-glow" style="color:#ec4899; transform-origin: 350px 225px;">
+                <circle cx="350" cy="225" r="48" fill="url(#gradDrum)" stroke="#ec4899" stroke-width="4.5"/>
+                <text x="350" y="222" text-anchor="middle" fill="#fce7f3" font-size="13" font-weight="800">SURDO (S)</text>
+                <text x="350" y="238" text-anchor="middle" fill="#f9a8d4" font-size="9">Floor Tom [U]</text>
+              </g>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. PARTITURA RÍTMICA SIMPLIFICADA EM TEMPO REAL (COMPASSO ATUAL + PRÓXIMO COMPASSO) -->
+      <div class="glass-panel rounded-2xl p-4">
+        <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+          <div>
+            <h3 class="text-sm font-extrabold text-white flex items-center gap-2">
+              <span>🎼</span> Partitura Rítmica Simplificada em Tempo Real
+            </h3>
+            <p class="text-[11px] text-slate-400">
+              Subdivisão de semicolcheias (<code class="text-amber-300">1 e + a 2 e + a 3 e + a 4 e + a</code>) com agulha luminosa sincronizada
+            </p>
+          </div>
+          <div class="flex items-center gap-4 text-xs">
+            <div>Compasso Atual: <strong id="notation-bar-num" class="text-blue-400 font-mono">#1</strong></div>
+            <div>Próximo Compasso: <strong id="notation-next-bar-num" class="text-slate-300 font-mono">#2</strong></div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 xl:grid-cols-12 gap-4 items-stretch">
+          <!-- Grade do Compasso Atual (16 subdivisões) -->
+          <div class="xl:col-span-8 bg-studio-950 rounded-xl p-3 border border-slate-800 overflow-x-auto">
+            <div class="text-[11px] font-bold uppercase tracking-wider text-blue-400 mb-2 flex items-center justify-between">
+              <span id="current-bar-title">COMPASSO ATUAL (1) — LEVADA PRINCIPAL</span>
+              <span class="font-mono text-amber-400" id="current-beat-indicator">Pulso: 1</span>
+            </div>
+            <div id="live-notation-grid" class="min-w-[640px] space-y-1.5"></div>
+          </div>
+
+          <!-- Prévia do Próximo Compasso -->
+          <div class="xl:col-span-4 bg-studio-950 rounded-xl p-3 border border-slate-800 flex flex-col justify-between">
+            <div>
+              <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2 flex items-center justify-between">
+                <span>PRÓXIMO COMPASSO (PREVIEW)</span>
+                <span id="next-bar-type-badge" class="px-2 py-0.5 rounded bg-slate-800 text-slate-300 text-[10px]">Groove</span>
+              </div>
+              <div id="next-bar-preview" class="space-y-2 mt-2"></div>
+            </div>
+
+            <div class="mt-3 pt-2.5 border-t border-slate-800 text-[11px] text-slate-400">
+              💡 <strong>Dica do Educador:</strong> Mantenha a contagem em voz alta (<code class="text-white">1 e 2 e 3 e 4 e</code>) e observe o alerta de virada no último compasso de cada frase!
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== VIEW 3: PORTAL DO PROFESSOR (GESTÃO DE ALUNOS E CÓDIGOS) ==================== -->
+    <section id="view-teacher" class="hidden space-y-6">
+      <div class="glass-panel rounded-2xl p-5 flex flex-wrap items-center justify-between gap-4 border-l-4 border-l-amber-400">
+        <div>
+          <span class="text-xs font-bold uppercase tracking-wider text-amber-400">PAINEL ADMINISTRATIVO DO EDUCADOR</span>
+          <h2 class="text-2xl font-extrabold text-white">Gestão de Alunos, Módulos e Códigos Portáteis</h2>
+          <p class="text-xs text-slate-300 mt-1">
+            Cadastre alunos, defina até qual módulo (1 a 10) cada aluno pode acessar e gere códigos exclusivos portáteis codificados em Base64.
+          </p>
+        </div>
+        <div class="flex flex-wrap items-center gap-2">
+          <button onclick="exportStudentsJSON()" class="px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold transition">
+            📥 Exportar Backup (.json)
+          </button>
+          <label class="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 text-xs font-bold cursor-pointer transition">
+            📤 Importar Backup (.json)
+            <input type="file" accept=".json" onchange="importStudentsJSON(event)" class="hidden" />
+          </label>
+          <button onclick="switchMainView('catalog')" class="px-3.5 py-2 rounded-xl bg-studio-950 border border-slate-700 text-xs font-bold text-slate-300">
+            Voltar ao Catálogo
+          </button>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <!-- Formulário Cadastrar Novo Aluno + Config Senha Mestre -->
+        <div class="lg:col-span-4 space-y-4">
+          <div class="glass-panel rounded-2xl p-5 space-y-3.5">
+            <h3 class="text-base font-extrabold text-white flex items-center gap-2">
+              <span>➕</span> Cadastrar Novo Aluno
+            </h3>
+            <div>
+              <label class="block text-xs font-semibold text-slate-400 mb-1">Nome Completo do Aluno</label>
+              <input id="new-student-name" type="text" placeholder="Ex: João Pedro Silva"
+                class="w-full px-3.5 py-2 rounded-xl bg-studio-950 border border-slate-700 text-sm focus:border-amber-400 focus:outline-none" />
+            </div>
+            <div class="grid grid-cols-2 gap-2.5">
+              <div>
+                <label class="block text-xs font-semibold text-slate-400 mb-1">Login</label>
+                <input id="new-student-login" type="text" placeholder="Ex: joao"
+                  class="w-full px-3.5 py-2 rounded-xl bg-studio-950 border border-slate-700 text-sm focus:border-amber-400 focus:outline-none" />
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-slate-400 mb-1">Senha</label>
+                <input id="new-student-pass" type="text" placeholder="Ex: batera10"
+                  class="w-full px-3.5 py-2 rounded-xl bg-studio-950 border border-slate-700 text-sm focus:border-amber-400 focus:outline-none" />
+              </div>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-400 mb-1">Liberar Acesso até o Módulo:</label>
+              <select id="new-student-module" class="w-full px-3.5 py-2.5 rounded-xl bg-studio-950 border border-slate-700 text-sm text-amber-300 font-semibold">
+                <option value="1">Módulo 1 — Pulso Básico (10 músicas)</option>
+                <option value="2">Módulo 2 — Groove Rock em Colcheias (20 músicas)</option>
+                <option value="3">Módulo 3 — Variações de Bumbo (30 músicas)</option>
+                <option value="4" selected>Módulo 4 — Introdução às Viradas (40 músicas)</option>
+                <option value="5">Módulo 5 — Crash e Chimbal Aberto (50 músicas)</option>
+                <option value="6">Módulo 6 — Síncopes e Ride (60 músicas)</option>
+                <option value="7">Módulo 7 — Viradas Completas nos Tons (70 músicas)</option>
+                <option value="8">Módulo 8 — Up-Tempo & Punk Rock (80 músicas)</option>
+                <option value="9">Módulo 9 — Ghost Notes, 6/8 e Shuffle (90 músicas)</option>
+                <option value="10">Módulo 10 — Repertório Completo (100 músicas)</option>
+              </select>
+            </div>
+            <button onclick="createStudent()" class="w-full py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold text-xs shadow-lg shadow-amber-500/20 transition">
+              Gerar Credenciais + Código Exclusivo
+            </button>
+          </div>
+
+          <!-- Alterar Senha Mestre do Professor -->
+          <div class="glass-panel rounded-2xl p-5 space-y-3">
+            <h3 class="text-sm font-extrabold text-white">🔐 Segurança do Professor</h3>
+            <div>
+              <label class="block text-xs text-slate-400 mb-1">Nova Senha Mestre do Professor</label>
+              <div class="flex gap-2">
+                <input id="change-teacher-pass" type="text" placeholder="Nova senha (atual: prof2026)"
+                  class="flex-1 px-3 py-2 rounded-xl bg-studio-950 border border-slate-700 text-xs font-mono" />
+                <button onclick="updateTeacherMasterPassword()" class="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-bold text-amber-400">
+                  Salvar
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Lista de Alunos Cadastrados -->
+        <div class="lg:col-span-8 glass-panel rounded-2xl p-5">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-base font-extrabold text-white">📋 Alunos Cadastrados e Métricas de Estudo</h3>
+            <span id="teacher-students-count" class="text-xs font-mono text-slate-400">0 alunos</span>
+          </div>
+          <div id="teacher-students-list" class="space-y-3"></div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Notificação Toast -->
+  <div id="toast-container" class="fixed bottom-4 right-4 z-50 space-y-2 pointer-events-none"></div>
+
+  <!-- ==================== JAVASCRIPT COMPLETO DA APLICAÇÃO ==================== -->
+  <script>
+    /********************************************************************
+     * 1. DEFINIÇÃO DAS PEÇAS DA BATERIA E ENGINE DE PADRÕES RÍTMICOS
+     ********************************************************************/
+    const DRUM_PIECES = [
+      { code: 'K',  name: 'Crash (Ataque)',   short: 'Crash',   color: '#fbbf24', keyHint: 'K',      lane: 0 },
+      { code: 'R',  name: 'Ride (Condução)',  short: 'Ride',    color: '#22d3ee', keyHint: 'R',      lane: 1 },
+      { code: 'X',  name: 'Chimbal Fechado',  short: 'Chimbal', color: '#eab308', keyHint: 'X',      lane: 2 },
+      { code: 'O',  name: 'Chimbal Aberto',   short: 'Aberto',  color: '#f97316', keyHint: 'Z',      lane: 3 },
+      { code: 'T1', name: 'Tom 1 (Agudo)',    short: 'Tom 1',   color: '#10b981', keyHint: 'T',      lane: 4 },
+      { code: 'T2', name: 'Tom 2 (Médio)',    short: 'Tom 2',   color: '#8b5cf6', keyHint: 'Y',      lane: 5 },
+      { code: 'S',  name: 'Surdo (Floor)',    short: 'Surdo',   color: '#ec4899', keyHint: 'U',      lane: 6 },
+      { code: 'C',  name: 'Caixa (Snare)',    short: 'Caixa',   color: '#3b82f6', keyHint: 'C',      lane: 7 },
+      { code: 'B',  name: 'Bumbo (Kick)',     short: 'Bumbo',   color: '#ef4444', keyHint: 'Espaço', lane: 8 }
+    ];
+
+    const PIECE_MAP = Object.fromEntries(DRUM_PIECES.map(p => [p.code, p]));
+    const SUBDIVISION_LABELS = ['1', 'e', '+', 'a', '2', 'e', '+', 'a', '3', 'e', '+', 'a', '4', 'e', '+', 'a'];
+
+    // Biblioteca de Grooves e Viradas (16 steps = 1 compasso 4/4 em semicolcheias)
+    // Cada chave mapeia para um array de steps (0..15) onde a peça toca
+    const PATTERN_LIBRARY = {
+      // MÓDULO 1: Semínimas, Bumbo 1 e 3, Caixa 2 e 4
+      m1_stomp:     { B: [0, 2, 8, 10], C: [4, 12] }, // Estilo We Will Rock You
+      m1_pulse:     { B: [0, 4, 8, 12], C: [4, 12] }, // Four on the floor / Seven Nation Army
+      m1_quarter:   { X: [0, 4, 8, 12], B: [0, 8], C: [4, 12] }, // Semínimas no chimbal
+      m1_fill:      { B: [0, 8], C: [4, 8, 10, 12, 14] },
+
+      // MÓDULO 2: Groove Rock em Colcheias (8th notes)
+      m2_8th:       { X: [0, 2, 4, 6, 8, 10, 12, 14], B: [0, 8], C: [4, 12] },
+      m2_8th_four:  { X: [0, 2, 4, 6, 8, 10, 12, 14], B: [0, 4, 8, 12], C: [4, 12] },
+      m2_fill:      { X: [0, 2, 4, 6], B: [0, 8], C: [4, 8, 10, 12, 14] },
+
+      // MÓDULO 3: Variações de Bumbo (duplo no 3 / contratempo)
+      m3_doubleB:   { X: [0, 2, 4, 6, 8, 10, 12, 14], B: [0, 8, 10], C: [4, 12] },
+      m3_upbeatB:   { X: [0, 2, 4, 6, 8, 10, 12, 14], B: [0, 6, 8, 10], C: [4, 12] },
+      m3_fill:      { X: [0, 2, 4, 6], B: [0, 6, 8], C: [4, 10, 12, 14] },
+
+      // MÓDULO 4: Introdução às Viradas (Fills de 1 e 2 tempos Caixa + Tom 1)
+      m4_groove:    { X: [0, 2, 4, 6, 8, 10, 12, 14], B: [0, 8, 10], C: [4, 12] },
+      m4_fill_1b:   { X: [0, 2, 4, 6, 8, 10], B: [0, 8], C: [4, 12, 13], T1: [14, 15] },
+      m4_fill_2b:   { X: [0, 2, 4, 6], B: [0, 8], C: [4, 8, 9, 10, 11], T1: [12, 13, 14, 15] },
+
+      // MÓDULO 5: Prato de Ataque (Crash) no 1 + Chimbal Aberto
+      m5_crash:     { K: [0], X: [2, 4, 6, 8, 10, 12, 14], B: [0, 8, 10], C: [4, 12] },
+      m5_openHH:    { X: [0, 2, 4, 6, 8, 10, 12], O: [14], B: [0, 8, 10], C: [4, 12] },
+      m5_fill:      { K: [0], X: [2, 4, 6], B: [0, 8], C: [4, 8, 10], T1: [12, 13], T2: [14, 15] },
+
+      // MÓDULO 6: Síncopes no Bumbo e Condução no Ride
+      m6_sync:      { X: [0, 2, 4, 6, 8, 10, 12, 14], B: [0, 3, 6, 8, 10], C: [4, 12] },
+      m6_ride:      { K: [0], R: [2, 4, 6, 8, 10, 12, 14], B: [0, 6, 8, 10], C: [4, 12] },
+      m6_fill:      { R: [0, 2, 4, 6], B: [0, 6], C: [4, 8, 9], T1: [10, 11], T2: [12, 13], S: [14, 15] },
+
+      // MÓDULO 7: Viradas Completas de 1 Compasso (Caixa -> Tom 1 -> Tom 2 -> Surdo)
+      m7_groove:    { K: [0], X: [2, 4, 6, 8, 10, 12, 14], B: [0, 6, 8, 10], C: [4, 12] },
+      m7_full_fill: { B: [0, 4, 8, 12], C: [0, 1, 2, 3], T1: [4, 5, 6, 7], T2: [8, 9, 10, 11], S: [12, 13, 14, 15] },
+
+      // MÓDULO 8: Rock Acelerado (Up-Tempo / Punk Rock)
+      m8_punk:      { X: [0, 2, 4, 6, 8, 10, 12, 14], B: [0, 2, 8, 10], C: [4, 12] },
+      m8_chorus:    { K: [0], O: [2, 6, 10, 14], X: [4, 8, 12], B: [0, 2, 6, 8, 10], C: [4, 12] },
+      m8_fill:      { K: [0], B: [0, 4, 8, 12], C: [2, 4, 6, 8, 9], T1: [10, 11], T2: [12, 13], S: [14, 15] },
+
+      // MÓDULO 9: Dinâmica, Ghost Notes e 6/8 ou Shuffle
+      m9_ghost:     { X: [0, 2, 4, 6, 8, 10, 12, 14], B: [0, 6, 8, 10], C: [4, 7, 9, 12, 15] },
+      m9_shuffle:   { R: [0, 3, 4, 7, 8, 11, 12, 15], B: [0, 8, 11], C: [4, 12] },
+      m9_fill:      { B: [0, 8], C: [0, 2, 4, 5, 6, 7], T1: [8, 9, 10], T2: [11, 12, 13], S: [14, 15] },
+
+      // MÓDULO 10: Repertório Intermediário Consolidado
+      m10_verse:    { X: [0, 2, 4, 6, 8, 10, 12], O: [14], B: [0, 3, 6, 8, 10], C: [4, 7, 12] },
+      m10_chorus:   { K: [0], R: [2, 4, 6, 8, 10, 12, 14], B: [0, 2, 6, 8, 10, 14], C: [4, 12] },
+      m10_fill:     { K: [0], B: [0, 4, 8, 12], C: [1, 2, 3, 4, 5], T1: [6, 7, 8, 9], T2: [10, 11, 12], S: [13, 14, 15] }
+    };
+
+    /********************************************************************
+     * 2. BANCO DE DADOS PEDAGÓGICO: 10 MÓDULOS E 100 MÚSICAS DE ROCK
+     *    Distribuição Exata:
+     *    - 40 Curtas (90s a 165s / 1m30s a 2m45s)
+     *    - 40 Médias (166s a 255s / 2m46s a 4m15s)
+     *    - 20 Longas (>= 256s / >= 4m16s)
+     ********************************************************************/
+    const MODULES_INFO = [
+      { id: 1,  title: "Módulo 1: Pulso em Semínimas (Bumbo 1-3, Caixa 2-4)", desc: "Domínio do pulso fundamental do Rock: Bumbo nos tempos 1 e 3, Caixa firme no 2 e 4 (backbeat) e chimbal em semínimas.", vPat: "m1_quarter", cPat: "m1_pulse", fPat: "m1_fill" },
+      { id: 2,  title: "Módulo 2: Groove Rock em Colcheias (8th Notes)", desc: "Condução contínua em colcheias no Chimbal ('1 e 2 e 3 e 4 e') mantendo a independência entre mão direita, bumbo e caixa.", vPat: "m2_8th", cPat: "m2_8th_four", fPat: "m2_fill" },
+      { id: 3,  title: "Módulo 3: Variações Simples de Bumbo", desc: "Bumbo duplo no tempo 3 ('3 e') e contratempos simples sem perder a estabilidade da caixa nos tempos 2 e 4.", vPat: "m3_doubleB", cPat: "m3_upbeatB", fPat: "m3_fill" },
+      { id: 4,  title: "Módulo 4: Introdução às Viradas (Fills de 1 e 2 Tempos)", desc: "Marcação de frases de 4 e 8 compassos com viradas curtas utilizando Caixa e Tom 1 para anunciar mudanças de seção.", vPat: "m4_groove", cPat: "m4_fill_1b", fPat: "m4_fill_2b" },
+      { id: 5,  title: "Módulo 5: Prato de Ataque (Crash) + Chimbal Aberto", desc: "Acentuação do tempo 1 nas transições de Verso para Refrão com o Crash + abertura expressiva de Chimbal.", vPat: "m5_openHH", cPat: "m5_crash", fPat: "m5_fill" },
+      { id: 6,  title: "Módulo 6: Síncopes no Bumbo e Condução no Ride", desc: "Deslocamento de bumbo em semicolcheias e mudança de textura timbrística conduzindo o Refrão no Prato de Condução (Ride).", vPat: "m6_sync", cPat: "m6_ride", fPat: "m6_fill" },
+      { id: 7,  title: "Módulo 7: Viradas Completas de 1 Compasso nos Tons", desc: "Deslocamento horizontal pelos tambores: Caixa, Tom 1, Tom 2 e Surdo (Floor Tom) fechando no Crash do compasso seguinte.", vPat: "m7_groove", cPat: "m6_ride", fPat: "m7_full_fill" },
+      { id: 8,  title: "Módulo 8: Rock Acelerado (Up-Tempo & Punk Rock)", desc: "Desenvolvimento de resistência física, velocidade de condução e precisão em andamentos enérgicos.", vPat: "m8_punk", cPat: "m8_chorus", fPat: "m8_fill" },
+      { id: 9,  title: "Módulo 9: Dinâmica, Ghost Notes e Levadas 6/8 & Shuffle", desc: "Controle de volume na caixa (notas fantasmas), chimbal meio-aberto e o balanço ternário clássico do Rock/Blues.", vPat: "m9_ghost", cPat: "m9_shuffle", fPat: "m9_fill" },
+      { id: 10, title: "Módulo 10: Repertório Intermediário Consolidado", desc: "Performance completa combinando múltiplas conduções, viradas dinâmicas, pontes épicas e estruturas longas.", vPat: "m10_verse", cPat: "m10_chorus", fPat: "m10_fill" }
+    ];
+
+    // Catálogo compacto das 100 músicas reais [id, mod, title, band, durSec, bpm, totalBars, focus]
+    // Durações verificadas: 40 Curtas (90..165s), 40 Médias (166..255s), 20 Longas (>=256s)
+    const RAW_SONGS_DATA = [
+      // ================= MÓDULO 1 (6 Curtas, 4 Médias, 0 Longas) =================
+      [1,  1, "We Will Rock You",             "Queen",                  122, 81,  54,  "Pulso icônico: Bumbo 1 e 3, Caixa no 2 e 4 sem chimbal"],
+      [2,  1, "Blitzkrieg Bop",               "Ramones",                134, 176, 98,  "Pulso em semínimas firmes para iniciantes"],
+      [3,  1, "Song 2",                       "Blur",                   122, 130, 66,  "Marcando o tempo 1 e 3 no bumbo e 2 e 4 na caixa"],
+      [4,  1, "Fell In Love With a Girl",     "The White Stripes",      110, 150, 68,  "Semínimas diretas e constantes do início ao fim"],
+      [5,  1, "Love Me Do",                   "The Beatles",            142, 148, 86,  "Controle de andamento constante em semínimas"],
+      [6,  1, "You Really Got Me",            "The Kinks",              134, 138, 76,  "Backbeat clássico no 2 e 4 acompanhando o riff"],
+      [7,  1, "Seven Nation Army",            "The White Stripes",      232, 124, 120, "Pulso Four-on-the-floor no bumbo/surdo + caixa 2 e 4"],
+      [8,  1, "I Love Rock 'n' Roll",         "Joan Jett",              175, 94,  68,  "Bumbo pesado e espaçado com caixa seca no 2 e 4"],
+      [9,  1, "Eye of the Tiger",             "Survivor",               245, 109, 112, "Sustentação de pulso firme e acentuação de compassos"],
+      [10, 1, "Bad Moon Rising",              "Creedence Clearwater",   140, 179, 104, "Pulso simples e alegre mantendo estabilidade rítmica"],
+
+      // ================= MÓDULO 2 (5 Curtas, 5 Médias, 0 Longas) =================
+      [11, 2, "I Wanna Be Sedated",           "Ramones",                149, 164, 102, "Colcheias constantes no chimbal com bumbo 1-3 e caixa 2-4"],
+      [12, 2, "Twist and Shout",              "The Beatles",            155, 125, 80,  "Groove de colcheias clássico dos anos 60"],
+      [13, 2, "Should I Stay or Should I Go", "The Clash",              188, 113, 88,  "Alternância entre pausas de estrofe e groove em colcheias"],
+      [14, 2, "Back in Black",                "AC/DC",                  255, 92,  98,  "O groove definitivo de colcheias com precisão cirúrgica"],
+      [15, 2, "Another One Bites the Dust",   "Queen",                  215, 110, 98,  "Pocket firme em colcheias com bumbo 1-3 e caixa 2-4"],
+      [16, 2, "Yellow",                       "Coldplay",               250, 87,  90,  "Condução em colcheias contínuas com peso e regularidade"],
+      [17, 2, "Highway to Hell",              "AC/DC",                  208, 116, 100, "Groove sólido estilo Phil Rudd sem exageros"],
+      [18, 2, "Rock and Roll All Nite",       "Kiss",                   168, 145, 102, "Rock de arena direto em colcheias"],
+      [19, 2, "She Loves You",                "The Beatles",            141, 150, 88,  "Energia no chimbal em colcheias do primeiro ao último compasso"],
+      [20, 2, "Polly",                        "Nirvana",                156, 121, 78,  "Controle de dinâmica suave mantendo a contagem em colcheias"],
+
+      // ================= MÓDULO 3 (5 Curtas, 4 Médias, 1 Longa) =================
+      [21, 3, "A Hard Day's Night",           "The Beatles",            154, 139, 88,  "Bumbo duplo no tempo 3 ('3 e') impulsionando a música"],
+      [22, 3, "All the Small Things",         "Blink-182",              165, 148, 102, "Bumbo duplo nos tempos 1 e 3 com caixa firme"],
+      [23, 3, "About a Girl",                 "Nirvana",                164, 132, 90,  "Variação de bumbo no contratempo preparando a caixa"],
+      [24, 3, "Buddy Holly",                  "Weezer",                 159, 121, 80,  "Groove pop-rock com bumbo duplo no 3"],
+      [25, 3, "I Saw Her Standing There",     "The Beatles",            160, 160, 106, "Coordenação de pé direito em variações constantes"],
+      [26, 3, "Billie Jean (Rock Version)",   "Chris Cornell / MJ",     250, 117, 122, "Independência de bumbo sobre condução impecável"],
+      [27, 3, "Boulevard of Broken Dreams",   "Green Day",              252, 83,  88,  "Bumbo duplo no tempo 3 criando balanço melódico"],
+      [28, 3, "Have You Ever Seen the Rain",  "Creedence Clearwater",   160, 116, 78,  "Bumbo caminhandinho junto ao contrabaixo"],
+      [29, 3, "Smoke on the Water",           "Deep Purple",            240, 114, 114, "Variações de bumbo acompanhando o riff mais famoso do rock"],
+      [30, 3, "With or Without You",          "U2",                     296, 110, 136, "Resistência e construção dinâmica em estrutura longa"],
+
+      // ================= MÓDULO 4 (5 Curtas, 4 Médias, 1 Longa) =================
+      [31, 4, "Eight Days a Week",            "The Beatles",            163, 138, 94,  "Viradas curtas de 1 tempo a cada 4 ou 8 compassos"],
+      [32, 4, "Hash Pipe",                    "Weezer",                 165, 128, 88,  "Fills de caixa e tom 1 conectando estrofe e refrão"],
+      [33, 4, "Brain Stew",                   "Green Day",              165, 76,  52,  "Viradas em semicolcheias sobre andamento lento"],
+      [34, 4, "Fortunate Son",                "Creedence Clearwater",   141, 133, 78,  "Intro na caixa e tom + viradas de transição clássicas"],
+      [35, 4, "Proud Mary",                   "Creedence Clearwater",   164, 120, 82,  "Viradas de 2 tempos marcando claramente cada seção"],
+      [36, 4, "TNT",                          "AC/DC",                  214, 126, 112, "Fills cirúrgicos preparando a entrada do refrão"],
+      [37, 4, "Come As You Are",              "Nirvana",                219, 120, 110, "Viradas na caixa e tom 1 com pegada grunge"],
+      [38, 4, "Californication",              "Red Hot Chili Peppers",  252, 96,  100, "Fraseado de 8 compassos com pequenas chamadas de caixa"],
+      [39, 4, "Sweet Home Alabama",           "Lynyrd Skynyrd",         254, 98,  104, "Viradas de 2 tempos clássicas do Southern Rock"],
+      [40, 4, "Knockin' on Heaven's Door",    "Guns N' Roses",          336, 69,  96,  "Balada longa com viradas expressivas a cada 4 compassos"],
+
+      // ================= MÓDULO 5 (4 Curtas, 4 Médias, 2 Longas) =================
+      [41, 5, "Help!",                        "The Beatles",            138, 190, 110, "Ataques de Crash marcando os cortes vocais"],
+      [42, 5, "Sheena Is a Punk Rocker",      "Ramones",                165, 178, 122, "Crash no tempo 1 de cada mudança de parte"],
+      [43, 5, "Teenage Kicks",                "The Undertones",         148, 146, 90,  "Chimbal aberto no final do compasso + Crash no 1"],
+      [44, 5, "White Riot",                   "The Clash",              116, 180, 86,  "Explosão de pratos de ataque e condução firme"],
+      [45, 5, "Smells Like Teen Spirit",      "Nirvana",                254, 117, 124, "Chimbal aberto no refrão e ataques de Crash potentes"],
+      [46, 5, "American Idiot",               "Green Day",              176, 186, 136, "Cortes com Crash no tempo 1 e viradas explosivas"],
+      [47, 5, "You Shook Me All Night Long",  "AC/DC",                  210, 127, 112, "Uso clássico do Crash abrindo o refrão em 4/4"],
+      [48, 5, "Otherside",                    "Red Hot Chili Peppers",  255, 123, 130, "Aberturas de chimbal no verso e Crash no refrão"],
+      [49, 5, "Livin' on a Prayer",           "Bon Jovi",               256, 123, 132, "Transição épica do verso para o refrão com Crash e Fills"],
+      [50, 5, "Enter Sandman",                "Metallica",              331, 123, 170, "Construção de intro nos tons e Crash pesado no riff principal"],
+
+      // ================= MÓDULO 6 (4 Curtas, 4 Médias, 2 Longas) =================
+      [51, 6, "Yesterday (Full Band)",        "The Beatles",            125, 96,  50,  "Condução delicada e transições suaves para o Ride"],
+      [52, 6, "Immigrant Song",               "Led Zeppelin",           146, 112, 68,  "Síncope de bumbo implacável estilo John Bonham"],
+      [53, 6, "Paranoid",                     "Black Sabbath",          165, 163, 112, "Alternância de condução e bumbo sincopado"],
+      [54, 6, "Respectable",                  "The Rolling Stones",     160, 165, 110, "Condução no Ride dando brilho ao refrão"],
+      [55, 6, "Dani California",              "Red Hot Chili Peppers",  252, 96,  100, "Groove sincopado no verso + Ride explosivo no refrão"],
+      [56, 6, "Learn to Fly",                 "Foo Fighters",           235, 136, 134, "Mudança clara do Chimbal (Verso) para o Ride (Refrão)"],
+      [57, 6, "Basket Case",                  "Green Day",              181, 170, 128, "Síncopes rápidas de bumbo e condução precisa no Ride"],
+      [58, 6, "Start Me Up",                  "The Rolling Stones",     213, 122, 108, "Groove sincopado com assinatura de Charlie Watts"],
+      [59, 6, "Under the Bridge",             "Red Hot Chili Peppers",  264, 84,  92,  "Síncopes melódicas e condução limpa na segunda metade"],
+      [60, 6, "Sweet Child O' Mine",          "Guns N' Roses",          356, 125, 186, "Mudanças de textura entre Chimbal, Ride e Tons"],
+
+      // ================= MÓDULO 7 (3 Curtas, 4 Médias, 3 Longas) =================
+      [61, 7, "Fire",                         "Jimi Hendrix Experience",163, 145, 98,  "Viradas completas passando por Tom 1, Tom 2 e Surdo"],
+      [62, 7, "Foxey Lady",                   "Jimi Hendrix Experience",165, 98,  68,  "Fills de 1 compasso inteiro descendo pelos tambores"],
+      [63, 7, "Summertime Blues",             "The Who",                162, 114, 76,  "Viradas expressivas estilo Keith Moon adaptadas"],
+      [64, 7, "In the End",                   "Linkin Park",            216, 105, 94,  "Groove moderno com virada completa antes do refrão final"],
+      [65, 7, "The Pretender",                "Foo Fighters",           254, 173, 182, "Fills poderosos percorrendo Caixa, Tom 1, Tom 2 e Surdo"],
+      [66, 7, "Don't Stop Me Now",            "Queen",                  209, 156, 136, "Viradas melódicas nos tons preparando cada seção"],
+      [67, 7, "Detroit Rock City",            "Kiss",                   215, 134, 120, "Fills clássicos de Hard Rock em semicolcheias"],
+      [68, 7, "In the Air Tonight",           "Phil Collins",           336, 95,  132, "A virada completa de bateria mais icônica da história"],
+      [69, 7, "Baba O'Riley",                 "The Who",                300, 117, 146, "Fills épicos nos tons na parte final da música"],
+      [70, 7, "Stairway to Heaven",           "Led Zeppelin",           482, 82,  164, "Entrada histórica de bateria com viradas completas de Bonham"],
+
+      // ================= MÓDULO 8 (4 Curtas, 4 Médias, 2 Longas) =================
+      [71, 8, "Judy Is a Punk",               "Ramones",                92,  175, 68,  "Sprint curto de alta velocidade para destravar a mão direita"],
+      [72, 8, "Tourette's",                   "Nirvana",                95,  182, 72,  "Explosão punk-grunge de resistência rápida"],
+      [73, 8, "Dead Leaves and the Dirty Ground","The White Stripes",   164, 136, 92,  "Ataques fortes e viradas rápidas entre riffs"],
+      [74, 8, "Breed",                        "Nirvana",                165, 160, 110, "Levada up-tempo incessante estilo Dave Grohl"],
+      [75, 8, "Everlong",                     "Foo Fighters",           250, 158, 164, "Resistência de condução rápida e viradas explosivas"],
+      [76, 8, "Ace of Spades",                "Motörhead",              169, 141, 100, "Up-tempo agressivo e precisão nos ataques"],
+      [77, 8, "Monkey Wrench",                "Foo Fighters",           231, 174, 168, "Controle de fôlego em andamento punk rock acelerado"],
+      [78, 8, "Helena",                       "My Chemical Romance",    204, 126, 108, "Transições rápidas e condução intensa"],
+      [79, 8, "Master of Puppets",            "Metallica",              515, 212, 450, "Desafio supremo de resistência em música longa (adaptado)"],
+      [80, 8, "Paradise City",                "Guns N' Roses",          406, 100, 168, "Começa cadenciada e acelera no grand finale up-tempo"],
+
+      // ================= MÓDULO 9 (2 Curtas, 4 Médias, 4 Longas) =================
+      [81, 9, "Break On Through",             "The Doors",              149, 175, 108, "Dinâmica de caixa com notas fantasmas leves"],
+      [82, 9, "Sunshine of Your Love",        "Cream",                  164, 114, 78,  "Levada nos tons e variação dinâmica de chimbal"],
+      [83, 9, "Nothing Else Matters",         "Metallica",              388, 69,  112, "O clássico absoluto do compasso composto 6/8 no Rock"],
+      [84, 9, "We Are the Champions",         "Queen",                  179, 64,  48,  "Balanço em 6/8 com dinâmica crescente do verso ao refrão"],
+      [85, 9, "La Grange",                    "ZZ Top",                 231, 162, 156, "Shuffle texano clássico com notas fantasmas na caixa"],
+      [86, 9, "Rosanna (Rock Adaptation)",    "Toto",                   255, 86,  92,  "Introdução ao Half-Time Shuffle com ghost notes"],
+      [87, 9, "Pride and Joy",                "Stevie Ray Vaughan",     220, 126, 116, "Shuffle blues-rock firme no chimbal e caixa"],
+      [88, 9, "Black",                        "Pearl Jam",              343, 77,  110, "Dinâmica expressiva, ghost notes e crescendo emocional"],
+      [89, 9, "Kashmir",                      "Led Zeppelin",           517, 80,  172, "Polirritmia aparente e peso lendário com controle dinâmico"],
+      [90, 9, "Comfortably Numb",             "Pink Floyd",             382, 63,  100, "Tempo lento exigindo controle absoluto de subdivisão e dinâmica"],
+
+      // ================= MÓDULO 10 (2 Curtas, 3 Médias, 5 Longas) =================
+      [91, 10, "Good Times Bad Times",        "Led Zeppelin",           165, 95,  66,  "Síncopes de bumbo avançadas e viradas nos tons em música curta"],
+      [92, 10, "20th Century Boy",            "T. Rex",                 164, 128, 88,  "Groove pesado com variações completas de prato e viradas"],
+      [93, 10, "Tom Sawyer (Adapted)",        "Rush",                   254, 88,  94,  "Precisão técnica, chimbal expressivo e viradas icônicas"],
+      [94, 10, "Chop Suey!",                  "System of a Down",       210, 127, 112, "Alternância entre partes rápidas, condução pesada e cortes"],
+      [95, 10, "Toxicity",                    "System of a Down",       218, 116, 106, "Domínio de dinâmica 6/8 pesado e viradas explosivas"],
+      [96, 10, "Bohemian Rhapsody",           "Queen",                  354, 72,  106, "Jornada completa: balada, seção operística e rock pesado"],
+      [97, 10, "Hotel California",            "Eagles",                 391, 74,  120, "Groove detalhado, variações de chimbal e viradas nos tons"],
+      [98, 10, "Alive",                       "Pearl Jam",              341, 75,  106, "Groove grunge intermediário com longo solo final"],
+      [99, 10, "November Rain",               "Guns N' Roses",          537, 79,  176, "Épico de quase 9 minutos com viradas melódicas e final intenso"],
+      [100,10, "Wish You Were Here",          "Pink Floyd",             334, 60,  84,  "Controle maduro de andamento, espaço musical e preenchimentos"]
+    ];
+
+    /********************************************************************
+     * 3. ENGINE DE EXPANSÃO DE PARTITURA E CONSTRUÇÃO DAS 100 MÚSICAS
+     *    Preserva o número exato de compassos (`totalBars`) dividido em
+     *    seções reais (Intro, Verso 1, Refrão 1, Verso 2, Refrão 2,
+     *    Ponte/Solo, Refrão Final, Outro).
+     ********************************************************************/
+    function buildRealisticSections(totalBars, modId) {
+      const mod = MODULES_INFO[modId - 1];
+      const sections = [];
+      let remaining = totalBars;
+
+      const take = (ideal) => {
+        const n = Math.max(2, Math.min(ideal, remaining));
+        remaining -= n;
+        return n;
+      };
+
+      const introBars = take(totalBars >= 90 ? 8 : 4);
+      sections.push({ name: "Intro", bars: introBars, groove: mod.vPat, fill: mod.fPat });
+
+      const v1Bars = take(totalBars >= 100 ? 16 : 12);
+      sections.push({ name: "Verso 1", bars: v1Bars, groove: mod.vPat, fill: mod.fPat });
+
+      const c1Bars = take(totalBars >= 90 ? 12 : 8);
+      sections.push({ name: "Refrão 1", bars: c1Bars, groove: mod.cPat, fill: mod.fPat });
+
+      const v2Bars = take(totalBars >= 100 ? 16 : 12);
+      sections.push({ name: "Verso 2", bars: v2Bars, groove: mod.vPat, fill: mod.fPat });
+
+      const c2Bars = take(totalBars >= 90 ? 12 : 8);
+      sections.push({ name: "Refrão 2", bars: c2Bars, groove: mod.cPat, fill: mod.fPat });
+
+      if (remaining > 16) {
+        const soloBars = take(Math.floor(remaining * 0.45));
+        sections.push({ name: "Ponte / Solo", bars: soloBars, groove: mod.cPat, fill: mod.fPat });
+      }
+
+      if (remaining > 8) {
+        const c3Bars = take(Math.min(16, remaining - 4));
+        sections.push({ name: "Refrão Final", bars: c3Bars, groove: mod.cPat, fill: mod.fPat });
+      }
+
+      if (remaining > 0) {
+        sections.push({ name: "Outro / Final", bars: remaining, groove: mod.cPat, fill: mod.fPat });
+      }
+
+      return sections;
+    }
+
+    function formatSeconds(sec) {
+      const m = Math.floor(sec / 60);
+      const s = sec % 60;
+      return `${m}:${s.toString().padStart(2, '0')}`;
+    }
+
+    function getDurationCategory(sec) {
+      if (sec <= 165) return { key: 'curta', label: 'Curta', badgeClass: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30' };
+      if (sec <= 255) return { key: 'media', label: 'Média', badgeClass: 'bg-blue-500/20 text-blue-300 border-blue-500/30' };
+      return { key: 'longa', label: 'Longa', badgeClass: 'bg-amber-500/20 text-amber-300 border-amber-500/30' };
+    }
+
+    const SONGS_DB = RAW_SONGS_DATA.map(([id, module, title, band, durationSec, bpm, totalBars, focus]) => {
+      const durCat = getDurationCategory(durationSec);
+      const isSixEight = (id === 83 || id === 84 || id === 95);
+      return {
+        id,
+        module,
+        title,
+        band,
+        durationSec,
+        durationFormatted: formatSeconds(durationSec),
+        durationCategory: durCat.key,
+        durationLabel: durCat.label,
+        durationBadgeClass: durCat.badgeClass,
+        bpm,
+        meter: isSixEight ? '6/8' : '4/4',
+        totalBars,
+        focus,
+        sections: buildRealisticSections(totalBars, module)
+      };
+    });
+
+    /**
+     * Engine de Expansão de Partitura:
+     * Expande qualquer uma das 100 músicas em todos os seus compassos reais (`1..totalBars`)
+     * adaptando o padrão de cada compasso ao Nível de Dificuldade escolhido (1, 2 ou 3).
+     */
+    function expandSongScore(song, difficultyLevel = 2) {
+      const expandedBars = [];
+      let globalBarIndex = 1;
+
+      song.sections.forEach((sec, secIdx) => {
+        for (let b = 1; b <= sec.bars; b++) {
+          const isLastBarOfSection = (b === sec.bars);
+          const isPhraseEnd = (b % 4 === 0);
+          let patternKey = sec.groove;
+          let isFillBar = false;
+
+          // Músicas especiais do Módulo 1 (We Will Rock You / Seven Nation Army)
+          if (song.id === 1 && sec.name.startsWith("Verso")) patternKey = "m1_stomp";
+          if (song.id === 7 && sec.name.startsWith("Verso")) patternKey = "m1_pulse";
+
+          if (difficultyLevel === 1) {
+            // Nível 1: Super Simplificado (apenas pulso base sem viradas complexas)
+            patternKey = (song.id === 1) ? "m1_stomp" : "m1_quarter";
+            isFillBar = false;
+          } else if (difficultyLevel === 2) {
+            // Nível 2: Groove Padrão + virada no final de cada seção (a partir do Módulo 4)
+            if (isLastBarOfSection && song.module >= 4) {
+              patternKey = sec.fill;
+              isFillBar = true;
+            }
+          } else if (difficultyLevel === 3) {
+            // Nível 3: Groove + Viradas completas a cada 4 compassos e Crash no início de seção
+            if (isLastBarOfSection || isPhraseEnd) {
+              patternKey = (song.module >= 7) ? "m7_full_fill" : sec.fill;
+              isFillBar = true;
+            }
+          }
+
+          const basePattern = PATTERN_LIBRARY[patternKey] || PATTERN_LIBRARY.m2_8th;
+          // Clonar matriz de 16 steps: steps[0..15] = array de códigos de peças
+          const steps = Array.from({ length: 16 }, () => []);
+          Object.entries(basePattern).forEach(([pieceCode, indices]) => {
+            indices.forEach(stepIdx => {
+              if (stepIdx >= 0 && stepIdx < 16) {
+                steps[stepIdx].push(pieceCode);
+              }
+            });
+          });
+
+          // Se for o primeiro compasso de um Refrão no Nível 2 ou 3 (Módulo >= 5), garante Crash no tempo 1
+          if (b === 1 && secIdx > 0 && difficultyLevel >= 2 && song.module >= 5) {
+            if (!steps[0].includes('K')) {
+              steps[0].push('K');
+              steps[0] = steps[0].filter(p => p !== 'X');
+            }
+          }
+
+          expandedBars.push({
+            barNumber: globalBarIndex,
+            sectionIndex: secIdx,
+            sectionName: sec.name,
+            barInSection: b,
+            totalBarsInSection: sec.bars,
+            isFillBar,
+            steps
+          });
+          globalBarIndex++;
+        }
+      });
+
+      return expandedBars;
+    }
+
+    /********************************************************************
+     * 4. MOTOR DE ÁUDIO ZERO-LATÊNCIA (WEB AUDIO API SYNTHESIZER)
+     *    Sintetiza todas as 9 peças da bateria + Metrônomo sem arquivos externos
+     ********************************************************************/
+    class DrumAudioEngine {
+      constructor() {
+        this.ctx = null;
+        this.noiseBuffer = null;
+      }
+
+      init() {
+        if (!this.ctx) {
+          const AudioCtx = window.AudioContext || window.webkitAudioContext;
+          this.ctx = new AudioCtx();
+          // Gerar buffer de ruído branco para Caixa, Chimbal e Pratos
+          const bufferSize = this.ctx.sampleRate * 1.5;
+          this.noiseBuffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+          const data = this.noiseBuffer.getChannelData(0);
+          for (let i = 0; i < bufferSize; i++) {
+            data[i] = Math.random() * 2 - 1;
+          }
+        }
+        if (this.ctx.state === 'suspended') {
+          this.ctx.resume();
+        }
+      }
+
+      playPiece(code, when = 0) {
+        this.init();
+        const t = when || this.ctx.currentTime;
+        switch (code) {
+          case 'B':  this.synthKick(t); break;
+          case 'C':  this.synthSnare(t); break;
+          case 'X':  this.synthHiHat(t, false); break;
+          case 'O':  this.synthHiHat(t, true); break;
+          case 'T1': this.synthTom(t, 195); break;
+          case 'T2': this.synthTom(t, 142); break;
+          case 'S':  this.synthTom(t, 96); break;
+          case 'K':  this.synthCrash(t); break;
+          case 'R':  this.synthRide(t); break;
+        }
+      }
+
+      synthKick(t) {
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(145, t);
+        osc.frequency.exponentialRampToValueAtTime(42, t + 0.09);
+        osc.frequency.exponentialRampToValueAtTime(28, t + 0.28);
+
+        gain.gain.setValueAtTime(1.0, t);
+        gain.gain.exponentialRampToValueAtTime(0.001, t + 0.32);
+
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(t);
+        osc.stop(t + 0.33);
+      }
+
+      synthSnare(t) {
+        // Corpo do tambor
+        const osc = this.ctx.createOscillator();
+        const oscGain = this.ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(185, t);
+        osc.frequency.exponentialRampToValueAtTime(95, t + 0.1);
+        oscGain.gain.setValueAtTime(0.55, t);
+        oscGain.gain.exponentialRampToValueAtTime(0.01, t + 0.14);
+        osc.connect(oscGain);
+        oscGain.connect(this.ctx.destination);
+        osc.start(t);
+        osc.stop(t + 0.15);
+
+        // Esteira (Ruído filtrado)
+        const noise = this.ctx.createBufferSource();
+        noise.buffer = this.noiseBuffer;
+        const filter = this.ctx.createBiquadFilter();
+        filter.type = 'highpass';
+        filter.frequency.setValueAtTime(950, t);
+        const noiseGain = this.ctx.createGain();
+        noiseGain.gain.setValueAtTime(0.65, t);
+        noiseGain.gain.exponentialRampToValueAtTime(0.01, t + 0.21);
+
+        noise.connect(filter);
+        filter.connect(noiseGain);
+        noiseGain.connect(this.ctx.destination);
+        noise.start(t);
+        noise.stop(t + 0.22);
+      }
+
+      synthHiHat(t, isOpen = false) {
+        const duration = isOpen ? 0.38 : 0.065;
+        const noise = this.ctx.createBufferSource();
+        noise.buffer = this.noiseBuffer;
+
+        const bandpass = this.ctx.createBiquadFilter();
+        bandpass.type = 'bandpass';
+        bandpass.frequency.setValueAtTime(9200, t);
+        bandpass.Q.setValueAtTime(1.4, t);
+
+        const highpass = this.ctx.createBiquadFilter();
+        highpass.type = 'highpass';
+        highpass.frequency.setValueAtTime(6500, t);
+
+        const gain = this.ctx.createGain();
+        gain.gain.setValueAtTime(isOpen ? 0.42 : 0.32, t);
+        gain.gain.exponentialRampToValueAtTime(0.001, t + duration);
+
+        noise.connect(bandpass);
+        bandpass.connect(highpass);
+        highpass.connect(gain);
+        gain.connect(this.ctx.destination);
+        noise.start(t);
+        noise.stop(t + duration + 0.01);
+      }
+
+      synthTom(t, baseFreq) {
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(baseFreq * 1.35, t);
+        osc.frequency.exponentialRampToValueAtTime(baseFreq, t + 0.08);
+        osc.frequency.exponentialRampToValueAtTime(baseFreq * 0.65, t + 0.28);
+
+        gain.gain.setValueAtTime(0.75, t);
+        gain.gain.exponentialRampToValueAtTime(0.001, t + 0.3);
+
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(t);
+        osc.stop(t + 0.31);
+      }
+
+      synthCrash(t) {
+        const noise = this.ctx.createBufferSource();
+        noise.buffer = this.noiseBuffer;
+
+        const highpass = this.ctx.createBiquadFilter();
+        highpass.type = 'highpass';
+        highpass.frequency.setValueAtTime(4200, t);
+
+        const gain = this.ctx.createGain();
+        gain.gain.setValueAtTime(0.5, t);
+        gain.gain.exponentialRampToValueAtTime(0.002, t + 1.15);
+
+        noise.connect(highpass);
+        highpass.connect(gain);
+        gain.connect(this.ctx.destination);
+        noise.start(t);
+        noise.stop(t + 1.2);
+      }
+
+      synthRide(t) {
+        // Ping metálico + cauda aguda
+        const osc = this.ctx.createOscillator();
+        const oscGain = this.ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(5200, t);
+        oscGain.gain.setValueAtTime(0.18, t);
+        oscGain.gain.exponentialRampToValueAtTime(0.001, t + 0.35);
+        osc.connect(oscGain);
+        oscGain.connect(this.ctx.destination);
+        osc.start(t);
+        osc.stop(t + 0.36);
+
+        const noise = this.ctx.createBufferSource();
+        noise.buffer = this.noiseBuffer;
+        const filter = this.ctx.createBiquadFilter();
+        filter.type = 'bandpass';
+        filter.frequency.setValueAtTime(7800, t);
+        const gain = this.ctx.createGain();
+        gain.gain.setValueAtTime(0.26, t);
+        gain.gain.exponentialRampToValueAtTime(0.001, t + 0.45);
+
+        noise.connect(filter);
+        filter.connect(gain);
+        gain.connect(this.ctx.destination);
+        noise.start(t);
+        noise.stop(t + 0.46);
+      }
+
+      playMetronomeClick(isDownbeat = false, when = 0) {
+        this.init();
+        const t = when || this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(isDownbeat ? 1320 : 880, t);
+        gain.gain.setValueAtTime(isDownbeat ? 0.28 : 0.16, t);
+        gain.gain.exponentialRampToValueAtTime(0.001, t + 0.045);
+
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(t);
+        osc.stop(t + 0.05);
+      }
+    }
+
+    const audioEngine = new DrumAudioEngine();
+
+    /********************************************************************
+     * 5. SISTEMA DE AUTENTICAÇÃO E PORTAL DO PROFESSOR (localStorage + Base64)
+     ********************************************************************/
+    const STORAGE_KEYS = {
+      STUDENTS: 'drumacademy_students_v3',
+      TEACHER_PASS: 'drumacademy_teacher_pass_v3',
+      CURRENT_STUDENT: 'drumacademy_active_student_v3'
+    };
+
+    function encodePortableToken(studentObj) {
+      const payload = {
+        n: studentObj.name,
+        u: studentObj.login,
+        p: studentObj.password,
+        m: studentObj.unlockedModule,
+        c: studentObj.shortCode
+      };
+      const b64 = btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
+      return `DRUM-PORTABLE-${b64}`;
+    }
+
+    function decodePortableToken(tokenStr) {
+      try {
+        const clean = tokenStr.trim().replace(/^DRUM-PORTABLE-/, '');
+        const json = decodeURIComponent(escape(atob(clean)));
+        const data = JSON.parse(json);
+        if (data && data.n && data.m) return data;
+      } catch (e) {
+        return null;
+      }
+      return null;
+    }
+
+    function generateShortCode(name, maxMod) {
+      const slug = (name || 'ALUNO').toUpperCase().replace(/[^A-Z]/g, '').slice(0, 6) || 'ALUNO';
+      const modStr = String(maxMod).padStart(2, '0');
+      const rand = Math.floor(1000 + Math.random() * 9000);
+      return `DRUM-${slug}-M${modStr}-${rand}`;
+    }
+
+    function loadStudentsDB() {
+      const raw = localStorage.getItem(STORAGE_KEYS.STUDENTS);
+      if (raw) {
+        try { return JSON.parse(raw); } catch (e) {}
+      }
+      // Alunos iniciais padrão para demonstração imediata
+      const defaults = [
+        {
+          id: 'stu_demo',
+          name: 'Aluno Demo (Acesso Completo)',
+          login: 'aluno',
+          password: '1234',
+          unlockedModule: 10,
+          active: true,
+          shortCode: 'DRUM-DEMO-M10',
+          completedSongs: [1, 2, 7, 14, 15],
+          starsBySong: { 1: 3, 2: 3, 7: 3, 14: 2, 15: 3 },
+          practiceMinutes: 42
+        },
+        {
+          id: 'stu_lucas',
+          name: 'Lucas Mendes (Iniciante)',
+          login: 'lucas',
+          password: '1234',
+          unlockedModule: 4,
+          active: true,
+          shortCode: 'DRUM-LUCAS-M04-4821',
+          completedSongs: [1, 2, 11],
+          starsBySong: { 1: 3, 2: 2, 11: 3 },
+          practiceMinutes: 18
+        }
+      ];
+      defaults.forEach(s => { s.portableToken = encodePortableToken(s); });
+      saveStudentsDB(defaults);
+      return defaults;
+    }
+
+    function saveStudentsDB(list) {
+      localStorage.setItem(STORAGE_KEYS.STUDENTS, JSON.stringify(list));
+    }
+
+    function getTeacherPassword() {
+      return localStorage.getItem(STORAGE_KEYS.TEACHER_PASS) || 'prof2026';
+    }
+
+    let studentsList = loadStudentsDB();
+    let currentStudent = null;
+
+    function switchAuthTab(tab) {
+      ['code', 'cred', 'prof'].forEach(t => {
+        document.getElementById(`auth-form-${t}`).classList.toggle('hidden', t !== tab);
+        const btn = document.getElementById(`tab-login-${t}`);
+        if (t === tab) {
+          btn.className = 'flex-1 py-2 text-xs font-bold rounded-lg bg-blue-600 text-white transition';
+        } else {
+          btn.className = 'flex-1 py-2 text-xs font-bold rounded-lg text-slate-400 hover:text-white transition';
+        }
+      });
+      document.getElementById('auth-error-msg').classList.add('hidden');
+    }
+
+    function showAuthError(msg) {
+      const el = document.getElementById('auth-error-msg');
+      el.textContent = msg;
+      el.classList.remove('hidden');
+    }
+
+    function quickDemoLogin() {
+      studentsList = loadStudentsDB();
+      let demo = studentsList.find(s => s.login === 'aluno') || studentsList[0];
+      completeStudentLogin(demo);
+    }
+
+    function openTeacherLoginModal() {
+      document.getElementById('auth-screen').classList.remove('hidden');
+      switchAuthTab('prof');
+    }
+
+    function loginWithCode() {
+      const codeInput = document.getElementById('input-student-code').value.trim();
+      if (!codeInput) return showAuthError('Digite ou cole seu Código de Acesso Exclusivo.');
+
+      studentsList = loadStudentsDB();
+      // 1. Verificar código curto local
+      let found = studentsList.find(s =>
+        s.shortCode.toUpperCase() === codeInput.toUpperCase() ||
+        (s.portableToken && s.portableToken === codeInput)
+      );
+
+      // 2. Se não existir localmente, tentar decodificar Token Portátil Base64 gerado em outro dispositivo
+      if (!found) {
+        const decoded = decodePortableToken(codeInput);
+        if (decoded) {
+          found = {
+            id: 'stu_' + Date.now(),
+            name: decoded.n,
+            login: decoded.u || 'aluno_portatil',
+            password: decoded.p || '1234',
+            unlockedModule: Number(decoded.m) || 1,
+            active: true,
+            shortCode: decoded.c || generateShortCode(decoded.n, decoded.m),
+            completedSongs: [],
+            starsBySong: {},
+            practiceMinutes: 0
+          };
+          found.portableToken = encodePortableToken(found);
+          studentsList.push(found);
+          saveStudentsDB(studentsList);
+          showToast(`Perfil portátil de ${found.name} importado com sucesso!`);
+        }
+      }
+
+      if (!found) {
+        return showAuthError('Código inválido ou não encontrado. Verifique com seu professor ou use DRUM-DEMO-M10.');
+      }
+      if (!found.active) {
+        return showAuthError('O acesso deste aluno está temporariamente bloqueado pelo professor.');
+      }
+      completeStudentLogin(found);
+    }
+
+    function loginWithCredentials() {
+      const u = document.getElementById('input-student-user').value.trim().toLowerCase();
+      const p = document.getElementById('input-student-pass').value.trim();
+      studentsList = loadStudentsDB();
+      const found = studentsList.find(s => s.login.toLowerCase() === u && s.password === p);
+      if (!found) return showAuthError('Usuário ou senha incorretos. Use "aluno" / "1234" para testar.');
+      if (!found.active) return showAuthError('Conta bloqueada pelo professor.');
+      completeStudentLogin(found);
+    }
+
+    function completeStudentLogin(student) {
+      currentStudent = student;
+      localStorage.setItem(STORAGE_KEYS.CURRENT_STUDENT, student.id);
+      document.getElementById('auth-screen').classList.add('hidden');
+      updateStudentHeaderUI();
+      renderModulePills();
+      renderCatalog();
+      showToast(`Bem-vindo ao estúdio, ${student.name}!`);
+    }
+
+    function loginTeacher() {
+      const pass = document.getElementById('input-teacher-pass').value;
+      if (pass !== getTeacherPassword()) {
+        return showAuthError('Senha mestre do professor incorreta! (Padrão: prof2026)');
+      }
+      if (!currentStudent) {
+        studentsList = loadStudentsDB();
+        currentStudent = studentsList[0];
+      }
+      document.getElementById('auth-screen').classList.add('hidden');
+      updateStudentHeaderUI();
+      switchMainView('teacher');
+      renderTeacherPortal();
+      showToast('Portal do Professor desbloqueado.');
+    }
+
+    function openTeacherPortalFromTopbar() {
+      const pass = prompt('Digite a Senha Mestre do Professor (Padrão de demonstração: prof2026):', 'prof2026');
+      if (pass === null) return;
+      if (pass !== getTeacherPassword()) {
+        showToast('Senha incorreta!', 'error');
+        return;
+      }
+      switchMainView('teacher');
+      renderTeacherPortal();
+    }
+
+    function logoutUser() {
+      stopPlayback(true);
+      document.getElementById('auth-screen').classList.remove('hidden');
+      switchAuthTab('code');
+    }
+
+    function updateStudentHeaderUI() {
+      if (!currentStudent) return;
+      document.getElementById('header-student-name').textContent = currentStudent.name;
+      document.getElementById('header-student-module').textContent = `Módulo ${currentStudent.unlockedModule}`;
+      const totalStars = Object.values(currentStudent.starsBySong || {}).reduce((a, b) => a + b, 0);
+      document.getElementById('header-student-stars').textContent = totalStars;
+      const completedCount = (currentStudent.completedSongs || []).length;
+      document.getElementById('header-student-Completed').textContent = `${completedCount}/100 concluídas`;
+      document.getElementById('student-practice-time').textContent = `${currentStudent.practiceMinutes || 0} min`;
+    }
+
+    function persistCurrentStudent() {
+      if (!currentStudent) return;
+      studentsList = loadStudentsDB();
+      const idx = studentsList.findIndex(s => s.id === currentStudent.id);
+      if (idx !== -1) {
+        studentsList[idx] = currentStudent;
+        saveStudentsDB(studentsList);
+      }
+      updateStudentHeaderUI();
+    }
+
+    /********************************************************************
+     * 6. FUNÇÕES DO PAINEL DO PROFESSOR (CRUD ALUNOS + BACKUP JSON)
+     ********************************************************************/
+    function createStudent() {
+      const name = document.getElementById('new-student-name').value.trim();
+      const login = document.getElementById('new-student-login').value.trim().toLowerCase();
+      const password = document.getElementById('new-student-pass').value.trim();
+      const unlockedModule = Number(document.getElementById('new-student-module').value) || 1;
+
+      if (!name || !login || !password) {
+        showToast('Preencha Nome, Login e Senha do aluno.', 'error');
+        return;
+      }
+
+      studentsList = loadStudentsDB();
+      if (studentsList.some(s => s.login.toLowerCase() === login)) {
+        showToast('Já existe um aluno com este login.', 'error');
+        return;
+      }
+
+      const newStu = {
+        id: 'stu_' + Date.now(),
+        name,
+        login,
+        password,
+        unlockedModule,
+        active: true,
+        shortCode: generateShortCode(name, unlockedModule),
+        completedSongs: [],
+        starsBySong: {},
+        practiceMinutes: 0
+      };
+      newStu.portableToken = encodePortableToken(newStu);
+
+      studentsList.push(newStu);
+      saveStudentsDB(studentsList);
+
+      document.getElementById('new-student-name').value = '';
+      document.getElementById('new-student-login').value = '';
+      document.getElementById('new-student-pass').value = '';
+
+      renderTeacherPortal();
+      showToast(`Aluno ${name} cadastrado! Código: ${newStu.shortCode}`);
+    }
+
+    function renderTeacherPortal() {
+      studentsList = loadStudentsDB();
+      document.getElementById('teacher-students-count').textContent = `${studentsList.length} alunos cadastrados`;
+      const container = document.getElementById('teacher-students-list');
+
+      container.innerHTML = studentsList.map(stu => {
+        const stars = Object.values(stu.starsBySong || {}).reduce((a, b) => a + b, 0);
+        const completed = (stu.completedSongs || []).length;
+        return `
+          <div class="p-4 rounded-xl bg-studio-950 border ${stu.active ? 'border-slate-800' : 'border-rose-500/40 opacity-75'} flex flex-col gap-3">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <div>
+                <div class="flex items-center gap-2">
+                  <span class="font-extrabold text-sm text-white">${stu.name}</span>
+                  <span class="px-2 py-0.5 rounded text-[10px] font-bold ${stu.active ? 'bg-emerald-500/20 text-emerald-300' : 'bg-rose-500/20 text-rose-300'}">
+                    ${stu.active ? 'ATIVO' : 'BLOQUEADO'}
+                  </span>
+                </div>
+                <div class="text-xs text-slate-400 mt-0.5">
+                  Login: <code class="text-amber-300">${stu.login}</code> • Senha: <code class="text-amber-300">${stu.password}</code> •
+                  Concluídas: <strong class="text-emerald-400">${completed}/100</strong> • Estrelas: <strong class="text-amber-400">⭐ ${stars}</strong> •
+                  Tempo: <strong class="text-blue-400">${stu.practiceMinutes || 0} min</strong>
+                </div>
+              </div>
+
+              <div class="flex flex-wrap items-center gap-1.5">
+                <select onchange="changeStudentModule('${stu.id}', this.value)" class="px-2.5 py-1.5 rounded-lg bg-studio-900 border border-slate-700 text-xs text-blue-300 font-bold">
+                  ${Array.from({ length: 10 }, (_, i) => i + 1).map(m =>
+                    `<option value="${m}" ${stu.unlockedModule === m ? 'selected' : ''}>Liberado até Módulo ${m}</option>`
+                  ).join('')}
+                </select>
+                <button onclick="resetStudentPassword('${stu.id}')" class="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs text-slate-200 font-semibold">
+                  🔑 Senha
+                </button>
+                <button onclick="toggleStudentStatus('${stu.id}')" class="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs text-amber-300 font-semibold">
+                  ${stu.active ? 'Bloquear' : 'Ativar'}
+                </button>
+                <button onclick="deleteStudent('${stu.id}')" class="px-2.5 py-1.5 rounded-lg bg-rose-500/20 hover:bg-rose-500/30 text-xs text-rose-300 font-semibold">
+                  Excluir
+                </button>
+              </div>
+            </div>
+
+            <!-- Códigos de Acesso do Aluno -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-2 pt-2 border-t border-slate-800/80 text-xs">
+              <div class="flex items-center justify-between bg-studio-900 px-3 py-1.5 rounded-lg border border-slate-800">
+                <div>
+                  <span class="text-[10px] text-slate-400 block">Código Rápido:</span>
+                  <code class="font-mono text-amber-400 font-bold">${stu.shortCode}</code>
+                </div>
+                <button onclick="copyText('${stu.shortCode}')" class="px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-[11px] font-semibold">Copiar</button>
+              </div>
+              <div class="flex items-center justify-between bg-studio-900 px-3 py-1.5 rounded-lg border border-slate-800">
+                <div class="truncate pr-2">
+                  <span class="text-[10px] text-slate-400 block">Token Portátil Base64 (Qualquer Dispositivo):</span>
+                  <code class="font-mono text-blue-300 text-[11px]">${stu.portableToken}</code>
+                </div>
+                <button onclick="copyText('${stu.portableToken}')" class="px-2 py-1 rounded bg-blue-600/30 hover:bg-blue-600/50 text-blue-200 text-[11px] font-semibold shrink-0">Copiar Token</button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function changeStudentModule(id, newMod) {
+      studentsList = loadStudentsDB();
+      const s = studentsList.find(x => x.id === id);
+      if (!s) return;
+      s.unlockedModule = Number(newMod);
+      s.shortCode = generateShortCode(s.name, s.unlockedModule);
+      s.portableToken = encodePortableToken(s);
+      saveStudentsDB(studentsList);
+      if (currentStudent && currentStudent.id === id) {
+        currentStudent = s;
+        updateStudentHeaderUI();
+        renderModulePills();
+        renderCatalog();
+      }
+      renderTeacherPortal();
+      showToast(`Módulo atualizado para ${s.name} (Módulo ${newMod}).`);
+    }
+
+    function resetStudentPassword(id) {
+      const newPass = prompt('Digite a nova senha para este aluno:');
+      if (!newPass) return;
+      studentsList = loadStudentsDB();
+      const s = studentsList.find(x => x.id === id);
+      if (!s) return;
+      s.password = newPass.trim();
+      s.portableToken = encodePortableToken(s);
+      saveStudentsDB(studentsList);
+      renderTeacherPortal();
+      showToast('Senha do aluno redefinida!');
+    }
+
+    function toggleStudentStatus(id) {
+      studentsList = loadStudentsDB();
+      const s = studentsList.find(x => x.id === id);
+      if (!s) return;
+      s.active = !s.active;
+      saveStudentsDB(studentsList);
+      renderTeacherPortal();
+      showToast(`Status de ${s.name} alterado.`);
+    }
+
+    function deleteStudent(id) {
+      if (studentsList.length <= 1) {
+        showToast('Mantenha pelo menos 1 aluno cadastrado no sistema.', 'error');
+        return;
+      }
+      studentsList = studentsList.filter(x => x.id !== id);
+      saveStudentsDB(studentsList);
+      renderTeacherPortal();
+      showToast('Aluno removido.');
+    }
+
+    function updateTeacherMasterPassword() {
+      const val = document.getElementById('change-teacher-pass').value.trim();
+      if (!val) return showToast('Digite uma senha válida.', 'error');
+      localStorage.setItem(STORAGE_KEYS.TEACHER_PASS, val);
+      document.getElementById('change-teacher-pass').value = '';
+      showToast('Senha mestre do professor atualizada!');
+    }
+
+    function exportStudentsJSON() {
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(loadStudentsDB(), null, 2));
+      const a = document.createElement('a');
+      a.setAttribute('href', dataStr);
+      a.setAttribute('download', `drumacademy_alunos_backup.json`);
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      showToast('Backup .json exportado com sucesso!');
+    }
+
+    function importStudentsJSON(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const imported = JSON.parse(e.target.result);
+          if (Array.isArray(imported) && imported.length > 0) {
+            saveStudentsDB(imported);
+            renderTeacherPortal();
+            showToast(`${imported.length} alunos restaurados com sucesso!`);
+          } else {
+            showToast('Arquivo JSON inválido.', 'error');
+          }
+        } catch (err) {
+          showToast('Erro ao ler arquivo JSON.', 'error');
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    /********************************************************************
+     * 7. CATÁLOGO DE MÓDULOS E FILTROS (100 MÚSICAS)
+     ********************************************************************/
+    let selectedModuleFilter = 'all'; // 'all' ou 1..10
+
+    function populateBandsDropdown() {
+      const bands = [...new Set(SONGS_DB.map(s => s.band))].sort();
+      const select = document.getElementById('filter-band');
+      select.innerHTML = `<option value="all">Todas as Bandas (${bands.length})</option>` +
+        bands.map(b => `<option value="${b}">${b}</option>`).join('');
+    }
+
+    function renderModulePills() {
+      const unlocked = currentStudent ? currentStudent.unlockedModule : 10;
+      const container = document.getElementById('module-pills-container');
+
+      let html = `
+        <button onclick="selectModule('all')" class="px-3 py-1.5 rounded-xl text-xs font-bold transition ${
+          selectedModuleFilter === 'all'
+            ? 'bg-blue-600 text-white shadow'
+            : 'bg-studio-950 text-slate-300 border border-slate-800 hover:border-slate-600'
+        }">
+          Todos (1–10)
+        </button>
+      `;
+
+      MODULES_INFO.forEach(m => {
+        const isLocked = m.id > unlocked;
+        const isSelected = selectedModuleFilter === m.id;
+        html += `
+          <button onclick="selectModule(${m.id})" class="px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1 ${
+            isSelected
+              ? 'bg-amber-500 text-slate-950 shadow'
+              : isLocked
+                ? 'bg-studio-950/50 text-slate-500 border border-slate-800/60'
+                : 'bg-studio-950 text-slate-200 border border-slate-800 hover:border-blue-500/50'
+          }">
+            <span>${isLocked ? '🔒' : '🥁'}</span> Mód ${m.id}
+          </button>
+        `;
+      });
+
+      container.innerHTML = html;
+    }
+
+    function selectModule(modId) {
+      selectedModuleFilter = modId;
+      renderModulePills();
+      if (modId === 'all') {
+        document.getElementById('module-banner-tag').textContent = 'ARQUITETURA PEDAGÓGICA PROGRESSIVA • 100 CLÁSSICOS';
+        document.getElementById('module-banner-title').textContent = 'Todos os 10 Módulos (Iniciante ao Intermediário)';
+        document.getElementById('module-banner-desc').textContent = 'Cada música preserva rigorosamente o número total de compassos e seções reais da gravação original.';
+      } else {
+        const info = MODULES_INFO[modId - 1];
+        document.getElementById('module-banner-tag').textContent = `MÓDULO ${info.id} DE 10 • 10 MÚSICAS SELECIONADAS`;
+        document.getElementById('module-banner-title').textContent = info.title;
+        document.getElementById('module-banner-desc').textContent = info.desc;
+      }
+      renderCatalog();
+    }
+
+    function setDurationFilter(cat) {
+      document.getElementById('filter-duration').value = cat;
+      renderCatalog();
+    }
+
+    function resetCatalogFilters() {
+      selectedModuleFilter = 'all';
+      document.getElementById('filter-search').value = '';
+      document.getElementById('filter-duration').value = 'all';
+      document.getElementById('filter-band').value = 'all';
+      document.getElementById('filter-status').value = 'all';
+      selectModule('all');
+    }
+
+    function renderCatalog() {
+      const search = document.getElementById('filter-search').value.trim().toLowerCase();
+      const durFilter = document.getElementById('filter-duration').value;
+      const bandFilter = document.getElementById('filter-band').value;
+      const statusFilter = document.getElementById('filter-status').value;
+      const unlockedMax = currentStudent ? currentStudent.unlockedModule : 10;
+      const completedIds = currentStudent ? (currentStudent.completedSongs || []) : [];
+
+      const filtered = SONGS_DB.filter(song => {
+        if (selectedModuleFilter !== 'all' && song.module !== selectedModuleFilter) return false;
+        if (durFilter !== 'all' && song.durationCategory !== durFilter) return false;
+        if (bandFilter !== 'all' && song.band !== bandFilter) return false;
+        const isDone = completedIds.includes(song.id);
+        if (statusFilter === 'completed' && !isDone) return false;
+        if (statusFilter === 'pending' && isDone) return false;
+        if (search && !(`${song.title} ${song.band} ${song.focus}`.toLowerCase().includes(search))) return false;
+        return true;
+      });
+
+      document.getElementById('catalog-count-summary').textContent = `Exibindo ${filtered.length} de 100 músicas`;
+
+      const grid = document.getElementById('songs-grid');
+      grid.innerHTML = filtered.map(song => {
+        const isLocked = song.module > unlockedMax;
+        const isDone = completedIds.includes(song.id);
+        const stars = (currentStudent && currentStudent.starsBySong && currentStudent.starsBySong[song.id]) || 0;
+
+        return `
+          <div class="glass-panel rounded-2xl p-4 flex flex-col justify-between border transition ${
+            isLocked
+              ? 'border-slate-800/50 opacity-60'
+              : isDone
+                ? 'border-emerald-500/40 hover:border-emerald-400'
+                : 'border-slate-800 hover:border-blue-500/60'
+          }">
+            <div>
+              <div class="flex items-center justify-between gap-2 mb-2">
+                <div class="flex items-center gap-1.5">
+                  <span class="px-2 py-0.5 rounded bg-studio-950 border border-slate-700 text-[10px] font-mono font-bold text-slate-300">
+                    #${String(song.id).padStart(3, '0')} • MÓD ${song.module}
+                  </span>
+                  <span class="px-2 py-0.5 rounded border text-[10px] font-mono font-bold ${song.durationBadgeClass}">
+                    ⏱ ${song.durationFormatted} (${song.durationLabel})
+                  </span>
+                </div>
+                <div class="text-xs font-mono text-amber-400">
+                  ${'⭐'.repeat(stars)}${'☆'.repeat(3 - stars)}
+                </div>
+              </div>
+
+              <h3 class="text-base font-extrabold text-white leading-snug">${song.title}</h3>
+              <div class="text-xs font-semibold text-blue-400">${song.band}</div>
+              <p class="text-[11px] text-slate-400 mt-1.5 line-clamp-2">${song.focus}</p>
+
+              <!-- Resumo da Estrutura Real de Compassos -->
+              <div class="mt-3 p-2 rounded-xl bg-studio-950/90 border border-slate-800/80 text-[10px] font-mono text-slate-300 flex flex-wrap items-center justify-between gap-1">
+                <span>🎼 <strong>${song.totalBars} compassos</strong> (${song.meter})</span>
+                <span>⚡ <strong>${song.bpm} BPM</strong></span>
+                <span>📐 ${song.sections.length} seções</span>
+              </div>
+            </div>
+
+            <div class="mt-3.5 pt-3 border-t border-slate-800/80 flex items-center justify-between gap-2">
+              <span class="text-[11px] font-semibold ${isDone ? 'text-emerald-400' : 'text-slate-400'}">
+                ${isDone ? '✅ Concluída' : isLocked ? `🔒 Requer Módulo ${song.module}` : '⏳ Pronta para praticar'}
+              </span>
+              <button onclick="openSongInStudio(${song.id})" class="px-3.5 py-2 rounded-xl text-xs font-extrabold transition ${
+                isLocked
+                  ? 'bg-slate-800 text-slate-400 cursor-not-allowed'
+                  : 'bg-blue-600 hover:bg-blue-500 text-white shadow shadow-blue-600/20'
+              }">
+                ${isLocked ? 'Bloqueado' : '🎯 Praticar Agora'}
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    /********************************************************************
+     * 8. PAINEL DE TREINO VISUAL LÚDICO (PLAYBACK, HIGHWAY 60FPS, PARTITURA)
+     ********************************************************************/
+    let activeSong = SONGS_DB[0];
+    let activeDifficulty = 2; // 1, 2, 3
+    let activeExpandedScore = [];
+    let currentBpm = 81;
+    let isPlaying = false;
+    let isCountInPhase = false;
+    let countInBeat = 1;
+
+    // Estado do cursor na música
+    let currentBarIndex = 0; // 0..totalBars-1
+    let currentStepIndex = 0; // 0..15 (semicolcheias dentro do compasso)
+    let loopSectionIndex = 'all'; // 'all' ou índice da seção (0..sections.length-1)
+
+    // Opções de áudio
+    let metronomeEnabled = true;
+    let drumGuideEnabled = true;
+    let countInEnabled = true;
+
+    // Timers de sincronização
+    let stepTimerId = null;
+    let lastStepTimestamp = 0;
+    let stepDurationMs = 120;
+    let highwayAnimId = null;
+
+    function openSongInStudio(songId) {
+      const song = SONGS_DB.find(s => s.id === songId);
+      if (!song) return;
+
+      const unlockedMax = currentStudent ? currentStudent.unlockedModule : 10;
+      if (song.module > unlockedMax) {
+        showToast(`Esta música pertence ao Módulo ${song.module}. Peça ao professor para liberar!`, 'error');
+        return;
+      }
+
+      stopPlayback(true);
+      activeSong = song;
+      currentBpm = song.bpm;
+      loopSectionIndex = 'all';
+
+      // Atualizar cabeçalho do Estúdio
+      document.getElementById('practice-module-badge').textContent = `MÓDULO ${song.module}`;
+      document.getElementById('practice-duration-badge').textContent = `${song.durationFormatted} • ${song.durationLabel.toUpperCase()}`;
+      document.getElementById('practice-Meter-badge').textContent = song.meter;
+      document.getElementById('practice-song-title').textContent = `${song.title} — ${song.band}`;
+      document.getElementById('practice-song-focus').textContent = `Foco Técnico: ${song.focus}`;
+
+      // Atualizar Slider BPM
+      document.getElementById('bpm-slider').value = currentBpm;
+      updateBpmLabels();
+
+      // Preencher Seletor de Loop de Seção (A-B)
+      const loopSelect = document.getElementById('section-loop-select');
+      let startBar = 1;
+      loopSelect.innerHTML = `<option value="all">🔁 Música Completa (${song.totalBars} compassos)</option>` +
+        song.sections.map((sec, idx) => {
+          const endBar = startBar + sec.bars - 1;
+          const opt = `<option value="${idx}">🔁 Loop A-B: ${sec.name} (Comp. ${startBar}–${endBar})</option>`;
+          startBar = endBar + 1;
+          return opt;
+        }).join('');
+
+      rebuildScoreAndUI();
+      switchMainView('practice');
+    }
+
+    function rebuildScoreAndUI() {
+      activeExpandedScore = expandSongScore(activeSong, activeDifficulty);
+      if (currentBarIndex >= activeExpandedScore.length) currentBarIndex = 0;
+      renderSectionsTimeline();
+      renderLiveNotationGrid();
+      renderLegendBar();
+    }
+
+    function setSongDifficulty(lvl) {
+      activeDifficulty = lvl;
+      const descriptions = {
+        1: 'Nível 1: Pulso Super Simplificado',
+        2: 'Nível 2: Groove Padrão do Módulo',
+        3: 'Nível 3: Groove + Viradas Completas'
+      };
+      document.getElementById('difficulty-desc-badge').textContent = descriptions[lvl];
+
+      [1, 2, 3].forEach(n => {
+        const btn = document.getElementById(`lvl-btn-${n}`);
+        if (n === lvl) {
+          btn.className = 'p-2 rounded-xl bg-blue-600/25 border border-blue-500 text-left transition';
+        } else {
+          btn.className = 'p-2 rounded-xl bg-studio-950 border border-slate-800 text-left transition opacity-80 hover:opacity-100';
+        }
+      });
+
+      rebuildScoreAndUI();
+      showToast(descriptions[lvl]);
+    }
+
+    function onBpmSliderChange(val) {
+      currentBpm = Number(val);
+      updateBpmLabels();
+      if (isPlaying) {
+        recalculateStepInterval();
+      }
+    }
+
+    function setBpmPercentage(ratio) {
+      currentBpm = Math.max(40, Math.min(220, Math.round(activeSong.bpm * ratio)));
+      document.getElementById('bpm-slider').value = currentBpm;
+      updateBpmLabels();
+      if (isPlaying) {
+        recalculateStepInterval();
+      }
+    }
+
+    function updateBpmLabels() {
+      const pct = Math.round((currentBpm / activeSong.bpm) * 100);
+      document.getElementById('bpm-current-display').textContent = currentBpm;
+      document.getElementById('bpm-percent-display').textContent = `(${pct}%)`;
+    }
+
+    function onSectionLoopChange(val) {
+      loopSectionIndex = val === 'all' ? 'all' : Number(val);
+      if (loopSectionIndex !== 'all') {
+        const firstBarIdx = activeExpandedScore.findIndex(b => b.sectionIndex === loopSectionIndex);
+        if (firstBarIdx !== -1) {
+          currentBarIndex = firstBarIdx;
+          currentStepIndex = 0;
+        }
+        showToast(`Loop A-B ativado: ${activeSong.sections[loopSectionIndex].name}`);
+      } else {
+        showToast('Loop A-B desativado (Música Completa)');
+      }
+      renderSectionsTimeline();
+      renderLiveNotationGrid();
+    }
+
+    function jumpToSection(secIdx) {
+      const firstBarIdx = activeExpandedScore.findIndex(b => b.sectionIndex === secIdx);
+      if (firstBarIdx !== -1) {
+        currentBarIndex = firstBarIdx;
+        currentStepIndex = 0;
+        renderSectionsTimeline();
+        renderLiveNotationGrid();
+      }
+    }
+
+    function toggleMetronome() {
+      metronomeEnabled = !metronomeEnabled;
+      const btn = document.getElementById('toggle-metronome-btn');
+      btn.innerHTML = `<span>⏱️</span> Metrônomo: ${metronomeEnabled ? 'ON' : 'OFF'}`;
+      btn.className = metronomeEnabled
+        ? 'py-2 px-2 rounded-xl bg-blue-600/25 border border-blue-500/60 text-blue-200 text-[11px] font-bold transition flex items-center justify-center gap-1'
+        : 'py-2 px-2 rounded-xl bg-studio-950 border border-slate-800 text-slate-400 text-[11px] font-bold transition flex items-center justify-center gap-1';
+    }
+
+    function toggleDrumGuide() {
+      drumGuideEnabled = !drumGuideEnabled;
+      const btn = document.getElementById('toggle-guide-btn');
+      btn.innerHTML = `<span>${drumGuideEnabled ? '🔊' : '🔇'}</span> Bateria Guia: ${drumGuideEnabled ? 'ON' : 'MUTE'}`;
+      btn.className = drumGuideEnabled
+        ? 'py-2 px-2 rounded-xl bg-emerald-600/25 border border-emerald-500/60 text-emerald-200 text-[11px] font-bold transition flex items-center justify-center gap-1'
+        : 'py-2 px-2 rounded-xl bg-rose-500/20 border border-rose-500/50 text-rose-200 text-[11px] font-bold transition flex items-center justify-center gap-1';
+    }
+
+    function toggleCountIn() {
+      countInEnabled = !countInEnabled;
+      const btn = document.getElementById('toggle-countin-btn');
+      btn.innerHTML = `<span>1-2-3-4</span> Count-in: ${countInEnabled ? 'ON' : 'OFF'}`;
+      btn.className = countInEnabled
+        ? 'py-2 px-2 rounded-xl bg-amber-500/25 border border-amber-500/60 text-amber-200 text-[11px] font-bold transition flex items-center justify-center gap-1'
+        : 'py-2 px-2 rounded-xl bg-studio-950 border border-slate-800 text-slate-400 text-[11px] font-bold transition flex items-center justify-center gap-1';
+    }
+
+    // Renderizar barra de seções e progresso de compassos
+    function renderSectionsTimeline() {
+      const barObj = activeExpandedScore[currentBarIndex] || activeExpandedScore[0];
+      if (!barObj) return;
+
+      document.getElementById('current-section-label').textContent = `SEÇÃO ATUAL: ${barObj.sectionName.toUpperCase()}`;
+      document.getElementById('current-bar-counter').textContent =
+        `Compasso ${barObj.barNumber} de ${activeSong.totalBars} (${barObj.barInSection}/${barObj.totalBarsInSection} na seção)`;
+
+      const fillBadge = document.getElementById('fill-alert-badge');
+      fillBadge.classList.toggle('hidden', !barObj.isFillBar);
+
+      const container = document.getElementById('song-sections-timeline');
+      let accum = 1;
+      container.innerHTML = activeSong.sections.map((sec, idx) => {
+        const start = accum;
+        const end = accum + sec.bars - 1;
+        accum = end + 1;
+        const isCurrent = barObj.sectionIndex === idx;
+        const isLooped = loopSectionIndex === idx;
+
+        return `
+          <button onclick="jumpToSection(${idx})" class="px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${
+            isCurrent
+              ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/30 ring-2 ring-amber-400'
+              : isLooped
+                ? 'bg-amber-500/25 border border-amber-500 text-amber-300'
+                : 'bg-studio-950 border border-slate-800 text-slate-300 hover:border-slate-600'
+          }">
+            <span>${isLooped ? '🔁' : '▪'}</span>
+            <span>${sec.name}</span>
+            <span class="text-[10px] font-mono opacity-75">(${sec.bars}c: ${start}–${end})</span>
+          </button>
+        `;
+      }).join('');
+    }
+
+    // Renderizar Partitura Rítmica Simplificada em Tempo Real (Compasso Atual + Preview do Próximo)
+    function renderLiveNotationGrid() {
+      const barObj = activeExpandedScore[currentBarIndex] || activeExpandedScore[0];
+      const nextBarObj = activeExpandedScore[(currentBarIndex + 1) % activeExpandedScore.length];
+      if (!barObj) return;
+
+      document.getElementById('notation-bar-num').textContent = `#${barObj.barNumber} (${barObj.sectionName})`;
+      document.getElementById('notation-next-bar-num').textContent = `#${nextBarObj.barNumber} (${nextBarObj.sectionName})`;
+      document.getElementById('current-bar-title').textContent =
+        `COMPASSO #${barObj.barNumber} — ${barObj.sectionName.toUpperCase()} ${barObj.isFillBar ? '• [VIRADA / FILL]' : '• [GROOVE]'}`;
+
+      const grid = document.getElementById('live-notation-grid');
+
+      // Cabeçalho de contagem: 1 e + a 2 e + a 3 e + a 4 e + a
+      let headerRow = `<div class="grid grid-cols-17 gap-1 items-center text-center font-mono text-[11px]">
+        <div class="text-left font-bold text-slate-400 pr-2">PEÇA</div>`;
+      for (let s = 0; s < 16; s++) {
+        const isBeat = (s % 4 === 0);
+        const isCurrentStep = isPlaying && !isCountInPhase && s === currentStepIndex;
+        headerRow += `
+          <div class="py-1 rounded ${
+            isCurrentStep
+              ? 'bg-amber-400 text-slate-950 font-black'
+              : isBeat
+                ? 'bg-slate-800 text-white font-bold'
+                : 'bg-studio-900 text-slate-500'
+          }">
+            ${SUBDIVISION_LABELS[s]}
+          </div>
+        `;
+      }
+      headerRow += `</div>`;
+
+      // Exibir as linhas das peças ativas no compasso (ou conjunto principal: Prato/Chimbal, Tons, Caixa, Bumbo)
+      const displayOrder = ['K', 'R', 'X', 'O', 'T1', 'T2', 'S', 'C', 'B'];
+      const activePiecesInBar = displayOrder.filter(code =>
+        code === 'X' || code === 'C' || code === 'B' ||
+        barObj.steps.some(stepArr => stepArr.includes(code))
+      );
+
+      const rowsHtml = activePiecesInBar.map(code => {
+        const piece = PIECE_MAP[code];
+        let cells = '';
+        for (let s = 0; s < 16; s++) {
+          const hasNote = barObj.steps[s].includes(code);
+          const isCurrentStep = isPlaying && !isCountInPhase && s === currentStepIndex;
+          cells += `
+            <div class="step-cell h-7 rounded flex items-center justify-center font-mono text-[11px] font-extrabold border ${
+              isCurrentStep ? 'active-playhead border-blue-400' : 'border-slate-800/80 bg-studio-900/70'
+            }">
+              ${hasNote
+                ? `<span class="w-5 h-5 rounded-full flex items-center justify-center text-slate-950 shadow" style="background:${piece.color}">${code}</span>`
+                : `<span class="text-slate-700">·</span>`
+              }
+            </div>
+          `;
+        }
+        return `
+          <div class="grid grid-cols-17 gap-1 items-center">
+            <div class="text-[11px] font-bold truncate pr-1 flex items-center gap-1" style="color:${piece.color}">
+              <span class="w-2 h-2 rounded-full shrink-0" style="background:${piece.color}"></span>
+              <span>${piece.short} (${code})</span>
+            </div>
+            ${cells}
+          </div>
+        `;
+      }).join('');
+
+      grid.innerHTML = headerRow + rowsHtml;
+
+      // Preview do Próximo Compasso
+      document.getElementById('next-bar-type-badge').textContent = nextBarObj.isFillBar ? '🔥 VIRADA (FILL)' : '🎵 Groove';
+      document.getElementById('next-bar-type-badge').className = nextBarObj.isFillBar
+        ? 'px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 text-[10px] font-bold'
+        : 'px-2 py-0.5 rounded bg-slate-800 text-slate-300 text-[10px] font-bold';
+
+      const previewEl = document.getElementById('next-bar-preview');
+      const mainBeats = [0, 2, 4, 6, 8, 10, 12, 14];
+      previewEl.innerHTML = `
+        <div class="grid grid-cols-8 gap-1 text-center font-mono text-[10px] text-slate-400">
+          <div>1</div><div>e</div><div>2</div><div>e</div><div>3</div><div>e</div><div>4</div><div>e</div>
+        </div>
+        <div class="grid grid-cols-8 gap-1">
+          ${mainBeats.map(stepIdx => {
+            const notes = nextBarObj.steps[stepIdx];
+            return `
+              <div class="min-h-[44px] rounded-lg bg-studio-900 border border-slate-800 p-1 flex flex-col items-center justify-center gap-0.5">
+                ${notes.length > 0
+                  ? notes.map(c => `<span class="px-1 rounded text-[9px] font-extrabold text-slate-950" style="background:${PIECE_MAP[c].color}">${c}</span>`).join('')
+                  : `<span class="text-slate-700 text-xs">-</span>`
+                }
+              </div>
+            `;
+          }).join('')}
+        </div>
+      `;
+    }
+
+    function renderLegendBar() {
+      const container = document.getElementById('drum-legend-bar');
+      container.innerHTML = DRUM_PIECES.map(p => `
+        <button onclick="triggerManualPiece('${p.code}')" class="p-1.5 rounded-lg bg-studio-950 hover:bg-slate-800 border border-slate-800 flex items-center gap-1.5 transition">
+          <span class="w-3.5 h-3.5 rounded flex items-center justify-center font-mono font-black text-[9px] text-slate-950 shrink-0" style="background:${p.color}">${p.code}</span>
+          <div class="text-left truncate">
+            <div class="font-bold text-white leading-none truncate">${p.short}</div>
+            <div class="text-[9px] text-slate-400 font-mono">[${p.keyHint}]</div>
+          </div>
+        </button>
+      `).join('');
+    }
+
+    /********************************************************************
+     * 9. CONTROLE DE PLAYBACK E AGENDAMENTO DE STEPS + COUNT-IN
+     ********************************************************************/
+    function togglePlay() {
+      if (isPlaying) {
+        pausePlayback();
+      } else {
+        startPlayback();
+      }
+    }
+
+    function recalculateStepInterval() {
+      // 1 compasso 4/4 = 4 semínimas = 16 semicolcheias (steps)
+      // Duração de 1 semicolcheia (1/4 de batida) em ms:
+      stepDurationMs = (60 / currentBpm / 4) * 1000;
+      if (stepTimerId) {
+        clearInterval(stepTimerId);
+        stepTimerId = setInterval(onStepTick, stepDurationMs);
+      }
+    }
+
+    function startPlayback() {
+      audioEngine.init();
+      isPlaying = true;
+      document.getElementById('btn-play-icon').textContent = '⏸';
+      document.getElementById('btn-play-label').textContent = 'PAUSAR TREINO';
+
+      stepDurationMs = (60 / currentBpm / 4) * 1000;
+      lastStepTimestamp = performance.now();
+
+      if (countInEnabled && currentStepIndex === 0) {
+        isCountInPhase = true;
+        countInBeat = 0; // 0..15 steps de count-in (4 batidas = 0, 4, 8, 12)
+      } else {
+        isCountInPhase = false;
+      }
+
+      onStepTick();
+      stepTimerId = setInterval(onStepTick, stepDurationMs);
+    }
+
+    function pausePlayback() {
+      isPlaying = false;
+      if (stepTimerId) {
+        clearInterval(stepTimerId);
+        stepTimerId = null;
+      }
+      document.getElementById('countin-overlay-badge').classList.add('hidden');
+      document.getElementById('btn-play-icon').textContent = '▶';
+      document.getElementById('btn-play-label').textContent = 'CONTINUAR';
+    }
+
+    function stopPlayback(resetToStart = true) {
+      pausePlayback();
+      if (resetToStart) {
+        if (loopSectionIndex !== 'all') {
+          const idx = activeExpandedScore.findIndex(b => b.sectionIndex === loopSectionIndex);
+          currentBarIndex = idx !== -1 ? idx : 0;
+        } else {
+          currentBarIndex = 0;
+        }
+        currentStepIndex = 0;
+      }
+      document.getElementById('btn-play-icon').textContent = '▶';
+      document.getElementById('btn-play-label').textContent = 'INICIAR c/ COUNT-IN';
+      renderSectionsTimeline();
+      renderLiveNotationGrid();
+    }
+
+    function onStepTick() {
+      lastStepTimestamp = performance.now();
+
+      // Fase de Count-In (1 compasso = 16 semicolcheias, clique nos steps 0, 4, 8, 12)
+      if (isCountInPhase) {
+        const badge = document.getElementById('countin-overlay-badge');
+        badge.classList.remove('hidden');
+        if (countInBeat % 4 === 0) {
+          const beatNum = Math.floor(countInBeat / 4) + 1;
+          badge.textContent = `COUNT-IN: ${beatNum}`;
+          audioEngine.playMetronomeClick(beatNum === 1);
+        }
+        countInBeat++;
+        if (countInBeat >= 16) {
+          isCountInPhase = false;
+          badge.classList.add('hidden');
+        }
+        return;
+      }
+
+      const barObj = activeExpandedScore[currentBarIndex];
+      if (!barObj) return;
+
+      // Metrônomo nos tempos 1, 2, 3, 4 (steps 0, 4, 8, 12)
+      if (currentStepIndex % 4 === 0) {
+        const beatNumber = Math.floor(currentStepIndex / 4) + 1;
+        document.getElementById('current-beat-indicator').textContent = `Pulso: ${beatNumber} / 4`;
+        if (metronomeEnabled) {
+          audioEngine.playMetronomeClick(beatNumber === 1);
+        }
+      }
+
+      // Tocar peças do step atual e acender bateria SVG
+      const piecesToTrigger = barObj.steps[currentStepIndex] || [];
+      piecesToTrigger.forEach(code => {
+        if (drumGuideEnabled) {
+          audioEngine.playPiece(code);
+        }
+        flashDrumPadSVG(code);
+      });
+
+      // Atualizar grade visual
+      renderLiveNotationGrid();
+
+      // Avançar step
+      currentStepIndex++;
+      if (currentStepIndex >= 16) {
+        currentStepIndex = 0;
+        advanceToNextBar();
+      }
+    }
+
+    function advanceToNextBar() {
+      if (loopSectionIndex !== 'all') {
+        const nextIdx = currentBarIndex + 1;
+        if (nextIdx >= activeExpandedScore.length || activeExpandedScore[nextIdx].sectionIndex !== loopSectionIndex) {
+          const firstInSec = activeExpandedScore.findIndex(b => b.sectionIndex === loopSectionIndex);
+          currentBarIndex = firstInSec !== -1 ? firstInSec : 0;
+        } else {
+          currentBarIndex = nextIdx;
+        }
+      } else {
+        currentBarIndex++;
+        if (currentBarIndex >= activeExpandedScore.length) {
+          // Concluiu todos os compassos da música!
+          currentBarIndex = 0;
+          markCurrentSongCompleted();
+          stopPlayback(true);
+          return;
+        }
+      }
+      renderSectionsTimeline();
+    }
+
+    function flashDrumPadSVG(code) {
+      const el = document.getElementById(`svg-pad-${code}`);
+      if (!el) return;
+      el.classList.add('drum-pad-active');
+      setTimeout(() => {
+        el.classList.remove('drum-pad-active');
+      }, 115);
+    }
+
+    function triggerManualPiece(code) {
+      audioEngine.playPiece(code);
+      flashDrumPadSVG(code);
+    }
+
+    // Atalhos de teclado para tocar bateria ao vivo
+    window.addEventListener('keydown', (e) => {
+      if (['INPUT', 'SELECT', 'TEXTAREA'].includes(document.activeElement.tagName)) return;
+      const key = e.key.toUpperCase();
+      if (e.code === 'Space') {
+        e.preventDefault();
+        triggerManualPiece('B');
+      } else if (key === 'B') triggerManualPiece('B');
+      else if (key === 'C') triggerManualPiece('C');
+      else if (key === 'X') triggerManualPiece('X');
+      else if (key === 'Z' || key === 'O') triggerManualPiece('O');
+      else if (key === 'T') triggerManualPiece('T1');
+      else if (key === 'Y') triggerManualPiece('T2');
+      else if (key === 'U' || key === 'S') triggerManualPiece('S');
+      else if (key === 'K') triggerManualPiece('K');
+      else if (key === 'R') triggerManualPiece('R');
+    });
+
+    function markCurrentSongCompleted() {
+      if (!currentStudent || !activeSong) return;
+      if (!currentStudent.completedSongs.includes(activeSong.id)) {
+        currentStudent.completedSongs.push(activeSong.id);
+      }
+      const prevStars = currentStudent.starsBySong[activeSong.id] || 0;
+      currentStudent.starsBySong[activeSong.id] = Math.max(prevStars, activeDifficulty);
+      currentStudent.practiceMinutes = (currentStudent.practiceMinutes || 0) + Math.max(2, Math.round(activeSong.durationSec / 60));
+
+      persistCurrentStudent();
+      renderCatalog();
+      showToast(`🎉 Parabéns! "${activeSong.title}" concluída com ${currentStudent.starsBySong[activeSong.id]} estrelas!`);
+    }
+
+    /********************************************************************
+     * 10. RENDERIZADOR CANVAS 60FPS DA PISTA "DRUM HERO / HIGHWAY"
+     ********************************************************************/
+    function startHighwayRenderLoop() {
+      const canvas = document.getElementById('highway-canvas');
+      const ctx = canvas.getContext('2d');
+
+      function renderFrame(now) {
+        const W = canvas.width;
+        const H = canvas.height;
+        ctx.clearRect(0, 0, W, H);
+
+        // Fundo da pista com gradiente
+        const bgGrad = ctx.createLinearGradient(0, 0, 0, H);
+        bgGrad.addColorStop(0, '#090b10');
+        bgGrad.addColorStop(1, '#131a29');
+        ctx.fillStyle = bgGrad;
+        ctx.fillRect(0, 0, W, H);
+
+        const numLanes = DRUM_PIECES.length; // 9 pistas
+        const laneW = W / numLanes;
+        const hitLineY = H - 46;
+
+        // Desenhar divisórias das 9 pistas e cabeçalho inferior (Strike Zone)
+        DRUM_PIECES.forEach((piece, idx) => {
+          const x = idx * laneW;
+          ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.moveTo(x, 0);
+          ctx.lineTo(x, H);
+          ctx.stroke();
+
+          // Receptor na linha de impacto
+          ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
+          ctx.strokeStyle = piece.color;
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.roundRect(x + 6, hitLineY - 12, laneW - 12, 24, 6);
+          ctx.fill();
+          ctx.stroke();
+
+          ctx.fillStyle = piece.color;
+          ctx.font = '800 11px JetBrains Mono, monospace';
+          ctx.textAlign = 'center';
+          ctx.fillText(piece.code, x + laneW / 2, hitLineY + 4);
+
+          ctx.fillStyle = '#94a3b8';
+          ctx.font = '600 9px Inter, sans-serif';
+          ctx.fillText(piece.short, x + laneW / 2, H - 8);
+        });
+
+        // Linha horizontal luminosa de impacto
+        ctx.strokeStyle = 'rgba(59, 130, 246, 0.55)';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(0, hitLineY);
+        ctx.lineTo(W, hitLineY);
+        ctx.stroke();
+
+        // Calcular posição contínua (em steps) para deslizamento suave 60fps
+        if (activeExpandedScore.length > 0) {
+          let fracStep = 0;
+          if (isPlaying && !isCountInPhase && stepDurationMs > 0) {
+            fracStep = Math.min(0.99, (now - lastStepTimestamp) / stepDurationMs);
+          }
+
+          const pixelsPerStep = 22; // Distância vertical entre semicolcheias
+          const visibleStepsAhead = 14;
+
+          for (let offset = 0; offset <= visibleStepsAhead; offset++) {
+            const totalStep = currentStepIndex + offset;
+            const barOffset = Math.floor(totalStep / 16);
+            const stepInBar = totalStep % 16;
+
+            let targetBarIdx = (currentBarIndex + barOffset) % activeExpandedScore.length;
+            if (loopSectionIndex !== 'all' && activeExpandedScore[targetBarIdx].sectionIndex !== loopSectionIndex) {
+              const firstLoopBar = activeExpandedScore.findIndex(b => b.sectionIndex === loopSectionIndex);
+              if (firstLoopBar !== -1) targetBarIdx = firstLoopBar;
+            }
+
+            const barData = activeExpandedScore[targetBarIdx];
+            if (!barData) continue;
+
+            const y = hitLineY - (offset - fracStep) * pixelsPerStep;
+            if (y < -20 || y > hitLineY + 12) continue;
+
+            // Linha guia de tempo forte (1, 2, 3, 4)
+            if (stepInBar % 4 === 0) {
+              ctx.strokeStyle = stepInBar === 0 ? 'rgba(251, 191, 36, 0.35)' : 'rgba(148, 163, 184, 0.14)';
+              ctx.lineWidth = stepInBar === 0 ? 2 : 1;
+              ctx.beginPath();
+              ctx.moveTo(0, y);
+              ctx.lineTo(W, y);
+              ctx.stroke();
+
+              if (stepInBar === 0) {
+                ctx.fillStyle = '#fbbf24';
+                ctx.font = '700 10px JetBrains Mono, monospace';
+                ctx.textAlign = 'left';
+                ctx.fillText(`Comp. #${barData.barNumber} (${barData.sectionName})`, 8, y - 4);
+              }
+            }
+
+            // Desenhar notas daquele step
+            const stepPieces = barData.steps[stepInBar] || [];
+            stepPieces.forEach(code => {
+              const piece = PIECE_MAP[code];
+              if (!piece) return;
+              const xCenter = piece.lane * laneW + laneW / 2;
+              const noteW = laneW - 18;
+              const noteH = 16;
+
+              ctx.save();
+              ctx.fillStyle = piece.color;
+              ctx.shadowColor = piece.color;
+              ctx.shadowBlur = offset === 0 ? 14 : 6;
+              ctx.beginPath();
+              ctx.roundRect(xCenter - noteW / 2, y - noteH / 2, noteW, noteH, 5);
+              ctx.fill();
+
+              ctx.fillStyle = '#090b10';
+              ctx.font = '800 10px JetBrains Mono, monospace';
+              ctx.textAlign = 'center';
+              ctx.fillText(code, xCenter, y + 3.5);
+              ctx.restore();
+            });
+          }
+        }
+
+        highwayAnimId = requestAnimationFrame(renderFrame);
+      }
+
+      highwayAnimId = requestAnimationFrame(renderFrame);
+    }
+
+    /********************************************************************
+     * 11. NAVEGAÇÃO ENTRE TELAS E UTILITÁRIOS
+     ********************************************************************/
+    function switchMainView(view) {
+      if (view !== 'practice' && isPlaying) {
+        pausePlayback();
+      }
+      ['catalog', 'practice', 'teacher'].forEach(v => {
+        document.getElementById(`view-${v}`).classList.toggle('hidden', v !== view);
+      });
+
+      document.getElementById('nav-btn-catalog').className = view === 'catalog'
+        ? 'px-3.5 py-1.5 rounded-lg text-xs font-bold bg-blue-600 text-white transition'
+        : 'px-3.5 py-1.5 rounded-lg text-xs font-bold text-slate-300 hover:text-white transition';
+
+      document.getElementById('nav-btn-practice').className = view === 'practice'
+        ? 'px-3.5 py-1.5 rounded-lg text-xs font-bold bg-blue-600 text-white transition'
+        : 'px-3.5 py-1.5 rounded-lg text-xs font-bold text-slate-300 hover:text-white transition';
+    }
+
+    function copyText(txt) {
+      navigator.clipboard.writeText(txt).then(() => {
+        showToast('Copiado para a área de transferência!');
+      });
+    }
+
+    function showToast(msg, type = 'info') {
+      const container = document.getElementById('toast-container');
+      const el = document.createElement('div');
+      el.className = `px-4 py-2.5 rounded-xl text-xs font-bold shadow-xl border transition-all ${
+        type === 'error'
+          ? 'bg-rose-950/95 border-rose-500 text-rose-200'
+          : 'bg-studio-900/95 border-blue-500/60 text-white'
+      }`;
+      el.textContent = msg;
+      container.appendChild(el);
+      setTimeout(() => {
+        el.remove();
+      }, 3200);
+    }
+
+    // Inicialização Geral ao carregar a página
+    window.addEventListener('DOMContentLoaded', () => {
+      // Auditar distribuição obrigatória 40 Curtas / 40 Médias / 20 Longas
+      const shortCount = SONGS_DB.filter(s => s.durationCategory === 'curta').length;
+      const medCount = SONGS_DB.filter(s => s.durationCategory === 'media').length;
+      const longCount = SONGS_DB.filter(s => s.durationCategory === 'longa').length;
+      document.getElementById('stat-short-count').textContent = shortCount;
+      document.getElementById('stat-medium-count').textContent = medCount;
+      document.getElementById('stat-long-count').textContent = longCount;
+
+      populateBandsDropdown();
+      studentsList = loadStudentsDB();
+      currentStudent = studentsList[0];
+      updateStudentHeaderUI();
+      renderModulePills();
+      renderCatalog();
+
+      // Carregar primeira música no Estúdio por padrão
+      activeSong = SONGS_DB[0];
+      currentBpm = activeSong.bpm;
+      rebuildScoreAndUI();
+      startHighwayRenderLoop();
+    });
+  </script>
+</body>
+</html>
